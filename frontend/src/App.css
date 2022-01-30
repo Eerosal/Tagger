@@ -1,0 +1,13 @@
+.app {
+    width: 100%;
+    max-width: 900px;
+    margin-top: 10px;
+}
+
+.navBar {
+    width: 100%;
+}
+
+.navBarEntry {
+    margin: 8px;
+}

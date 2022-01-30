@@ -4,8 +4,10 @@ module.exports = {
         es2021: true,
     },
     extends: [
-        "airbnb",
         "plugin:react/recommended",
+        "airbnb",
+        "react-app",
+        "react-app/jest",
         "prettier",
     ],
     parserOptions: {
@@ -15,10 +17,7 @@ module.exports = {
         ecmaVersion: "latest",
         sourceType: "module",
     },
-    plugins: [
-        "prettier",
-        "react",
-    ],
+    plugins: ["prettier", "react"],
     rules: {
         quotes: [2, "double", { avoidEscape: true }],
         indent: ["error", 4],
@@ -27,6 +26,6 @@ module.exports = {
         "import/extensions": "off",
         "no-alert": "off",
         "react/react-in-jsx-scope": "off",
-        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+        "react/jsx-filename-extension": [1, { extensions: [".js", ".jsx"] }],
     },
 };
