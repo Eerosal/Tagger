@@ -2,7 +2,9 @@ package fi.eerosalla.web.tagger;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+@EntityScan("fi.eerosalla.web.tagger.*")
 @SpringBootApplication
 public class TaggerApplication {
 

@@ -21,11 +21,14 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-jooq'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation group: 'com.j256.ormlite', name: 'ormlite-core', version: '6.1'
+    implementation group: 'com.j256.ormlite', name: 'ormlite-jdbc', version: '6.1'
+    implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:2.6.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
