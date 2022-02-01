@@ -2,6 +2,8 @@ import "./App.css";
 import { Routes, Route, Link } from "react-router-dom";
 import Home from "./routes/home";
 import Search from "./routes/search";
+import Upload from "./routes/upload/upload";
+import FileView from "./routes/fileView/fileView";
 
 function NavBar() {
     return (
@@ -15,6 +17,10 @@ function NavBar() {
                     {
                         name: "Search",
                         path: "/search"
+                    },
+                    {
+                        name: "Upload",
+                        path: "/upload",
                     }
                 ].map((navEntry) => (
                     <Link className="navBarEntry"
@@ -36,6 +42,8 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/search" element={<Search />} />
+                <Route path="/upload" element={<Upload />} />
+                <Route path="/files/:fileId" element={<FileView />} />
                 <Route path="*"
                     element={
                         <main>
