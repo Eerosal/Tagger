@@ -6,8 +6,12 @@ import fi.eerosalla.web.tagger.repository.file.FileEntry;
 import fi.eerosalla.web.tagger.repository.file.FileRepository;
 import fi.eerosalla.web.tagger.repository.tag.TagEntry;
 import fi.eerosalla.web.tagger.repository.tag.TagRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,9 +23,17 @@ public class FileController {
     private final Integer kalaId;
     private final FileRepository fileRepository;
 
-    @PostMapping("/api/files")
-    public Object uploadFile() {
-        return "asd";
+    @RequestMapping(
+        value = "/api/files",
+        method = RequestMethod.POST,
+        consumes = "multipart/form-data"
+    )
+    public Object uploadFile(
+        final @RequestParam String filename) {
+        FileEntry fileEntry = new FileEntry();
+        fileEntry.setName(filename);
+
+        return fileRepository.create(fileEntry);
     }
 
     private final TagRepository tagRepository;
@@ -86,5 +98,20 @@ public class FileController {
     public Object getFiles(
         final @RequestParam(name = "query") String queryStr) {
         return fileRepository.query(queryStr);
+    }
+
+    @GetMapping("/api/files/{fileId}")
+    public Object getFile(
+        final @PathVariable int fileId) {
+
+        FileEntry file = fileRepository.queryForId(fileId);
+
+        if (file == null) {
+            return new ResponseEntity<>(
+                HttpStatus.NOT_FOUND
+            );
+        }
+
+        return file;
     }
 }
