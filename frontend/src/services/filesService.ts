@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const query = async (queryStr) => {
+const query = async (queryStr: string) => {
     const searchParams = new URLSearchParams(
         {
             query: queryStr
@@ -11,7 +11,11 @@ const query = async (queryStr) => {
     return response.json();
 };
 
-const upload = async (uploadForm) => {
+interface UploadForm {
+    filename: string
+}
+
+const upload = async (uploadForm: UploadForm) => {
     const formData = new FormData();
     formData.append("filename", uploadForm.filename);
 
@@ -23,7 +27,7 @@ const upload = async (uploadForm) => {
     return response.json();
 };
 
-const getById = async (id) => {
+const getById = async (id: string) => {
     const response = await axios.get(`/api/files/${id}`);
     return response.data;
 }

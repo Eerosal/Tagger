@@ -1,17 +1,23 @@
 import { useLocation, useParams } from "react-router-dom";
-import React, { useEffect, useState } from "react";
-import fileService from "../../services/filesService.js";
+import { useEffect, useState } from "react";
+import fileService from "../../services/filesService";
+import { FileViewState, TaggerFile } from "../../common/types";
+
+interface FileInfo {
+    error?: string,
+    file?: TaggerFile
+}
 
 export default function FileView() {
     const { fileId } = useParams();
-    const [fileInfo, setFileInfo] = useState({});
+    const [fileInfo, setFileInfo] = useState<FileInfo>({});
     const { state } = useLocation();
-    const { uploadedFile } = state || {};
+    const { uploadedFile } = state as FileViewState;
 
     useEffect(() => {
         if (uploadedFile) {
             setFileInfo({
-                error: false,
+                error: null,
                 file: uploadedFile
             });
         } else {
@@ -20,7 +26,7 @@ export default function FileView() {
                     const file = await fileService.getById(fileId);
 
                     setFileInfo({
-                        error: false,
+                        error: null,
                         file
                     });
                 } catch (e) {

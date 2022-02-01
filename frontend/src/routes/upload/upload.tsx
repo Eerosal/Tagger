@@ -1,16 +1,18 @@
 import "./upload.css";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import filesService from "../../services/filesService.js";
+import * as React from "react";
+import filesService from "../../services/filesService";
 
-export default function Upload(){
+export default function Upload() {
     const [filename, setFilename] = useState("");
     const navigate = useNavigate();
 
-    const onUploadFormSubmit = async (event) => {
+    const onUploadFormSubmit = async (
+        event: React.SyntheticEvent) => {
         event.preventDefault();
 
-        if(!filename){
+        if (!filename) {
             alert("No input filename specified");
 
             return;
@@ -21,13 +23,13 @@ export default function Upload(){
             uploadedFile = await filesService.upload({
                 filename
             });
-        } catch (e){
+        } catch (e) {
             alert(e);
 
             return;
         }
 
-        if(uploadedFile){
+        if (uploadedFile) {
             navigate(
                 `/files/${uploadedFile.id}`,
                 {
@@ -37,7 +39,7 @@ export default function Upload(){
                 }
             );
         }
-    }
+    };
 
     return (
         <main>
@@ -51,7 +53,7 @@ export default function Upload(){
                             className="uploadFormTextInput"
                             value={filename}
                             onChange={(event) => {
-                                setFilename(event.target.value)
+                                setFilename(event.target.value);
                             }}
                         />
                     </label>

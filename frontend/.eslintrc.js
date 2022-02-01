@@ -1,7 +1,7 @@
 module.exports = {
-    env: {
-        browser: true,
-        es2021: true,
+    "env": {
+        "browser": true,
+        "es2021": true
     },
     extends: [
         "plugin:react/recommended",
@@ -10,15 +10,20 @@ module.exports = {
         "react-app/jest",
         "prettier",
     ],
-    parserOptions: {
-        ecmaFeatures: {
-            jsx: true,
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
         },
-        ecmaVersion: "latest",
-        sourceType: "module",
+        "ecmaVersion": "latest",
+        "sourceType": "module"
     },
-    plugins: ["prettier", "react"],
-    rules: {
+    "plugins": [
+        "prettier",
+        "react",
+        "@typescript-eslint"
+    ],
+    "rules": {
         quotes: [2, "double", { avoidEscape: true }],
         indent: ["error", 4],
         "max-len": ["error", { code: 80 }],
@@ -26,7 +31,8 @@ module.exports = {
         "import/extensions": "off",
         "no-alert": "off",
         "react/react-in-jsx-scope": "off",
-        "react/jsx-filename-extension": [1, { extensions: [".js", ".jsx"] }],
+        "react/jsx-filename-extension": [1, {
+            extensions: [".js", ".jsx", ".ts", ".tsx"] }],
         "jsx-a11y/label-has-associated-control": ["error", {
             "required": {
                 "some": ["nesting", "id"]
@@ -38,4 +44,11 @@ module.exports = {
             }
         }]
     },
-};
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [".js", ".jsx", ".ts", ".tsx"]
+            }
+        }
+    }
+}
