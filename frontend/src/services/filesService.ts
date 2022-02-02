@@ -1,6 +1,7 @@
 import axios from "axios";
+import { TaggerFileQueryResponse } from "../common/types";
 
-const query = async (queryStr: string) => {
+const query = async (queryStr: string): Promise<TaggerFileQueryResponse> => {
     const searchParams = new URLSearchParams(
         {
             query: queryStr
@@ -8,7 +9,9 @@ const query = async (queryStr: string) => {
     );
 
     const response = await fetch(`/api/files?${searchParams}`);
-    return response.json();
+    const json = await response.json();
+
+    return json as TaggerFileQueryResponse;
 };
 
 interface UploadForm {

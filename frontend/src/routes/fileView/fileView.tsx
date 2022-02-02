@@ -12,7 +12,7 @@ export default function FileView() {
     const { fileId } = useParams();
     const [fileInfo, setFileInfo] = useState<FileInfo>({});
     const { state } = useLocation();
-    const { uploadedFile } = state as FileViewState;
+    const { uploadedFile } = (state || {}) as FileViewState;
 
     useEffect(() => {
         if (uploadedFile) {

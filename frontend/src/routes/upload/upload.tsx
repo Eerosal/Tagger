@@ -1,5 +1,5 @@
 import "./upload.css";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as React from "react";
 import filesService from "../../services/filesService";
@@ -48,13 +48,16 @@ export default function Upload() {
                 <div className="uploadForm">
                     <label>
                         Filename<br />
-                        <input type="text"
+                        <input
+                            type="text"
                             id="inputFilename"
                             className="uploadFormTextInput"
                             value={filename}
-                            onChange={(event) => {
-                                setFilename(event.target.value);
-                            }}
+                            onChange={
+                                (event: ChangeEvent<HTMLInputElement>) => {
+                                    setFilename(event.target.value);
+                                }
+                            }
                         />
                     </label>
                     <br />
