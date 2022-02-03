@@ -1,4 +1,4 @@
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import fileService from "../../services/filesService";
 import { FileViewState, TaggerFile } from "../../common/types";
@@ -9,54 +9,46 @@ interface FileInfo {
 }
 
 export default function FileView() {
-    const { fileId } = useParams();
-    const [fileInfo, setFileInfo] = useState<FileInfo>({});
+    const navigate = useNavigate();
+    const { fileId: fileIdParam } = useParams();
+    const [currentFile, setCurrentFile] = useState<TaggerFile>(null);
     const { state } = useLocation();
     const { uploadedFile } = (state || {}) as FileViewState;
 
     useEffect(() => {
-        if (uploadedFile) {
-            setFileInfo({
-                error: null,
-                file: uploadedFile
-            });
-        } else {
-            (async () => {
-                try {
-                    const file = await fileService.getById(fileId);
-
-                    setFileInfo({
-                        error: null,
-                        file
-                    });
-                } catch (e) {
-                    let errorMessage;
-                    if (e.response) {
-                        if (e.response.status === 404) {
-                            errorMessage = "File not found";
-                        }
-                    }
-
-                    setFileInfo({
-                        error: errorMessage || e.toString(),
-                        file: null
-                    });
-                }
-            })();
+        const fileId = parseInt(fileIdParam, 10);
+        if(!fileId || isNaN(fileId)){
+            return;
         }
 
-    }, [uploadedFile, fileId]);
+        (async () => {
+            let newFile;
+            if(uploadedFile
+                && uploadedFile.id === fileId){
+                newFile = uploadedFile;
+            } else {
+                try {
+                    newFile = await fileService.getById(fileId)
+                } catch (e){
+                    if(e.response
+                        && e.response.status === 404){
+                        navigate("/404");
+                    } else {
+                        alert(e);
+                    }
+                }
+            }
+
+            setCurrentFile(newFile);
+        })();
+    }, [fileIdParam, uploadedFile]);
 
     return (
         <main>
             <h2>File view</h2>
             {
-                fileInfo.error &&
-                <h3>Error: {fileInfo.error}</h3>
-            }
-            {
-                fileInfo.file &&
-                <h2>{fileInfo.file.name}</h2>
+                currentFile &&
+                <h3>{currentFile.id} {currentFile.name}</h3>
             }
         </main>
     );

@@ -30,7 +30,7 @@ const upload = async (uploadForm: UploadForm) => {
     return response.json();
 };
 
-const getById = async (id: string) => {
+const getById = async (id: number) => {
     const response = await axios.get(`/api/files/${id}`);
     return response.data;
 }

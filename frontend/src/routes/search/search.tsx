@@ -175,7 +175,9 @@ export default function Search() {
                             response.results &&
                             response.results.map(result => (
                                 <div key={result.id} className="searchResult">
-                                    <h2>{result.id} {result.name}</h2>
+                                    <Link to={`/files/${result.id}`}>
+                                        <h4>{result.id} {result.name}</h4>
+                                    </Link>
                                 </div>
                             ))
                         }
