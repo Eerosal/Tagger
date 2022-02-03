@@ -15,6 +15,10 @@ function Paginator(props: PaginatorProps) {
     const [urlSearchParams] = useSearchParams();
     const { page, totalPageCount } = props;
 
+    if(!page || !totalPageCount){
+        return null;
+    }
+
     return (
         <menu>
             <ul>
@@ -177,7 +181,7 @@ export default function Search() {
                         }
                     </div>
                     {
-                        response.totalResultsCount &&
+                        response.totalResultsCount > 0 &&
                         <Paginator
                             page={page} totalPageCount={totalPageCount}
                         />
