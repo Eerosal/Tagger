@@ -7,6 +7,7 @@ import { TaggerFileQueryResponse } from "../../common/types";
 interface PaginatorInfo {
     page?: number,
     pageSize?: number,
+    query?: string,
 }
 
 interface PaginatorProps {
@@ -18,78 +19,80 @@ const DEFAULT_PAGE_SIZE = 24;
 
 function Paginator(props: PaginatorProps) {
     const { pageInfo, response } = props;
-    const [links, setLinks] = useState([]);
-    const [urlSearchParams] = useSearchParams();
-
-    useEffect(() => {
-        const { page, pageSize } = pageInfo;
-
-        if(!page || !pageSize){
-            setLinks([]);
-
-            return;
-        }
-
-        const pagesStart = Math.max(
-            1, page - 3
-        );
-
-        const { totalResultsCount } = response;
-        const lastPage =
-            (Math.floor((totalResultsCount || 0) / pageSize)) + 1;
-        const pagesEnd = Math.min(
-            page + 3, lastPage
-        );
-
-        const newLinks: any = [];
-        for (let i = pagesStart; i <= pagesEnd; i += 1) {
-            const urlParams =
-                new URLSearchParams({
-                    query:
-                        urlSearchParams.get(
-                            "query"
-                        ),
-                    page: `${i}`
-                });
-
-            const path = `/search?${
-                urlParams.toString()}`;
-
-            newLinks.push(
-                {
-                    text: `${i}`,
-                    current: i === pageInfo.page,
-                    path
-                }
-            );
-        }
-
-        setLinks(newLinks);
-    }, [response]);
-
     return (
         <menu>
-            {
-                links.map((link) => (
-                    <p
-                        className="paginatorLink"
-                        key={link.text}
-                    >
-                        {
-                            (link.current) ?
-                                <span className="paginatorCurrentLink">
-                                    <b>{link.text}</b>
-                                </span>
-                                :
-                                <Link
-                                    to={link.path}
-                                >
-                                    {link.text}
-                                </Link>
-                        }
-                    </p>
-                ))
-            }
+            <ul>
+                {
+                    Array.from(
+                        { length: 7 },
+                        (_: number, i: number) => i
+                    ).map(i => (
+                        <li
+                            className="paginatorLink"
+                            key={i}
+                        >
+                            {
+                                (() => {
+                                    const lastPage = Math.floor(
+                                        response.totalResultsCount
+                                        / pageInfo.pageSize + 1);
+
+                                    const showRightDots =
+                                        pageInfo.page < lastPage - 3;
+
+                                    let number;
+                                    if (i === 0) {
+                                        number = 1;
+                                    } else if (i === 6
+                                        && showRightDots) {
+                                        number = lastPage;
+                                    } else {
+                                        number = Math.max(
+                                            pageInfo.page - 3, 1
+                                        ) + i;
+                                    }
+
+                                    if (number === pageInfo.page) {
+                                        return (
+                                            <span>
+                                                <b>{number}</b>
+                                            </span>
+                                        );
+                                    }
+
+
+                                    if (number > lastPage) return null;
+
+                                    if ((i === 1
+                                            && pageInfo.page > 3)
+                                        || (i === 5 && showRightDots)) {
+                                        return (
+                                            <span>...</span>
+                                        );
+                                    }
+
+                                    const urlParams =
+                                        new URLSearchParams({
+                                            query: pageInfo.query,
+                                            page: `${number}`
+                                        });
+
+                                    const path = `/search?${
+                                        urlParams.toString()}`;
+
+                                    return (
+                                        <span>
+                                            <Link to={path}>
+                                                {number}
+                                            </Link>
+                                        </span>
+                                    );
+                                })()
+                            }
+                        </li>
+                    ))
+                }
+            </ul>
         </menu>
     );
 }
@@ -105,46 +108,45 @@ export default function Search() {
         useState<string>("");
 
     useEffect(() => {
+        let page;
+
         const pageUrlParam = urlSearchParams.get("page");
-        if(pageUrlParam){
-            setPageInfo({
-                pageSize: pageInfo.pageSize || DEFAULT_PAGE_SIZE,
-                page: parseInt(pageUrlParam, 10) || 1
-            } as PaginatorInfo)
+        if (pageUrlParam) {
+            page = parseInt(pageUrlParam, 10) || 1;
+        } else {
+            page = 1;
         }
 
+        const query = urlSearchParams.get("query");
 
+        setPageInfo({
+            pageSize: pageInfo.pageSize || DEFAULT_PAGE_SIZE,
+            page,
+            query
+        } as PaginatorInfo);
     }, [urlSearchParams]);
 
     useEffect(() => {
-        if(!pageInfo.page || !pageInfo.pageSize){
-            return;
-        }
+        const pageSize = pageInfo.pageSize || DEFAULT_PAGE_SIZE;
+        const page = pageInfo.page || 1;
 
-        const queryUrlParam = urlSearchParams.get("query");
-        if(queryUrlParam){
+        const queryStr =
+            `${pageInfo.query} page_size:${pageSize} page:${page}`;
 
-            const pageSize = pageInfo.pageSize || DEFAULT_PAGE_SIZE;
-            const page = pageInfo.page || 1;
-
-            const queryStr =
-                `${queryUrlParam} page_size:${pageSize} page:${page}`;
-
-            filesService.query(queryStr).then((newResponse) => {
-                if(newResponse.results.length === 0
-                    && newResponse.totalResultsCount > 0){
-                    setUrlSearchParams({
-                        query: queryUrlParam,
-                        page: "1"
-                    })
-                } else {
-                    setResponse(newResponse);
-                }
-            }).catch((e) => {
-                alert(e);
-            })
-        }
-    }, [pageInfo, urlSearchParams]);
+        filesService.query(queryStr).then((newResponse) => {
+            if (newResponse.results.length === 0
+                && newResponse.totalResultsCount > 0) {
+                setUrlSearchParams({
+                    query: pageInfo.query,
+                    page: "1"
+                });
+            } else {
+                setResponse(newResponse);
+            }
+        }).catch((e) => {
+            alert(e);
+        });
+    }, [pageInfo]);
 
     return (
         <main>
@@ -164,7 +166,7 @@ export default function Search() {
                         query: searchInputValue
                     });
 
-                    const url = `/search?${  params.toString()}`;
+                    const url = `/search?${params.toString()}`;
 
                     navigate(url);
                 }}
