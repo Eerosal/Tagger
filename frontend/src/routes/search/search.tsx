@@ -4,21 +4,17 @@ import { ChangeEvent, useEffect, useState } from "react";
 import filesService from "../../services/filesService";
 import { TaggerFileQueryResponse } from "../../common/types";
 
-interface PaginatorInfo {
-    page?: number,
-    pageSize?: number,
-    query?: string,
-}
-
 interface PaginatorProps {
-    pageInfo: PaginatorInfo,
-    response: TaggerFileQueryResponse
+    page: number,
+    totalPageCount: number,
 }
 
-const DEFAULT_PAGE_SIZE = 24;
+const PAGE_SIZE = 24;
 
 function Paginator(props: PaginatorProps) {
-    const { pageInfo, response } = props;
+    const [urlSearchParams] = useSearchParams();
+    const { page, totalPageCount } = props;
+
     return (
         <menu>
             <ul>
@@ -33,12 +29,11 @@ function Paginator(props: PaginatorProps) {
                         >
                             {
                                 (() => {
-                                    const lastPage = Math.floor(
-                                        response.totalResultsCount
-                                        / pageInfo.pageSize + 1);
+                                    const lastPage =
+                                        totalPageCount;
 
                                     const showRightDots =
-                                        pageInfo.page < lastPage - 3;
+                                        page < lastPage - 3;
 
                                     let number;
                                     if (i === 0) {
@@ -48,11 +43,11 @@ function Paginator(props: PaginatorProps) {
                                         number = lastPage;
                                     } else {
                                         number = Math.max(
-                                            pageInfo.page - 3, 1
+                                            page - 3, 1
                                         ) + i;
                                     }
 
-                                    if (number === pageInfo.page) {
+                                    if (number === page) {
                                         return (
                                             <span>
                                                 <b>{number}</b>
@@ -64,7 +59,7 @@ function Paginator(props: PaginatorProps) {
                                     if (number > lastPage) return null;
 
                                     if ((i === 1
-                                            && pageInfo.page > 3)
+                                            && page > 3)
                                         || (i === 5 && showRightDots)) {
                                         return (
                                             <span>...</span>
@@ -73,7 +68,7 @@ function Paginator(props: PaginatorProps) {
 
                                     const urlParams =
                                         new URLSearchParams({
-                                            query: pageInfo.query,
+                                            query: urlSearchParams.get("query"),
                                             page: `${number}`
                                         });
 
@@ -97,56 +92,53 @@ function Paginator(props: PaginatorProps) {
     );
 }
 
+
 export default function Search() {
     const navigate = useNavigate();
 
     const [urlSearchParams, setUrlSearchParams] = useSearchParams();
 
+    const getPageFromParams = () => {
+        const pageUrlParam = urlSearchParams.get("page");
+        if (pageUrlParam) {
+            return parseInt(pageUrlParam, 10) || 1;
+        }
+        return 1;
+    }
+
     const [response, setResponse] = useState<TaggerFileQueryResponse>();
-    const [pageInfo, setPageInfo] = useState<PaginatorInfo>({});
+    const [page, setPage] = useState<number>(getPageFromParams());
+    const [totalPageCount, setTotalPageCount] = useState<number>(0);
+
     const [searchInputValue, setSearchInputValue] =
         useState<string>("");
 
     useEffect(() => {
-        let page;
+        const newPage: number = getPageFromParams();
+        setPage(
+            newPage
+        );
 
-        const pageUrlParam = urlSearchParams.get("page");
-        if (pageUrlParam) {
-            page = parseInt(pageUrlParam, 10) || 1;
-        } else {
-            page = 1;
-        }
+        const newQuery = urlSearchParams.get("query") || "";
+        setSearchInputValue(
+            newQuery
+        );
 
-        const query = urlSearchParams.get("query");
+        const fullQuery =
+            `${newQuery} page_size:${PAGE_SIZE} page:${newPage}`;
 
-        setPageInfo({
-            pageSize: pageInfo.pageSize || DEFAULT_PAGE_SIZE,
-            page,
-            query
-        } as PaginatorInfo);
+        (async () => {
+            const newResponse = await filesService.query(fullQuery);
+
+            setTotalPageCount(
+                Math.floor(
+                    newResponse.totalResultsCount / PAGE_SIZE
+                ) + 1
+            );
+
+            setResponse(newResponse);
+        })();
     }, [urlSearchParams]);
-
-    useEffect(() => {
-        const pageSize = pageInfo.pageSize || DEFAULT_PAGE_SIZE;
-        const page = pageInfo.page || 1;
-
-        const queryStr =
-            `${pageInfo.query} page_size:${pageSize} page:${page}`;
-
-        filesService.query(queryStr).then((newResponse) => {
-            if (newResponse.results.length === 0
-                && newResponse.totalResultsCount > 0) {
-                setUrlSearchParams({
-                    query: pageInfo.query,
-                    page: "1"
-                });
-            } else {
-                setResponse(newResponse);
-            }
-        }).catch((e) => {
-            alert(e);
-        });
-    }, [pageInfo]);
 
     return (
         <main>
@@ -179,7 +171,7 @@ export default function Search() {
                             response.results &&
                             response.results.map(result => (
                                 <div key={result.id} className="searchResult">
-                                    <h2>{result.id}</h2>
+                                    <h2>{result.id} {result.name}</h2>
                                 </div>
                             ))
                         }
@@ -187,8 +179,7 @@ export default function Search() {
                     {
                         response.totalResultsCount &&
                         <Paginator
-                            pageInfo={pageInfo}
-                            response={response}
+                            page={page} totalPageCount={totalPageCount}
                         />
                     }
                 </>
