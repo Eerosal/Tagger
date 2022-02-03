@@ -1,5 +1,6 @@
 package fi.eerosalla.web.tagger.controller;
 
+import fi.eerosalla.web.tagger.model.response.FileQueryResponse;
 import fi.eerosalla.web.tagger.repository.connection.ConnectionEntry;
 import fi.eerosalla.web.tagger.repository.connection.ConnectionRepository;
 import fi.eerosalla.web.tagger.repository.file.FileEntry;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class FileController {
@@ -97,7 +101,13 @@ public class FileController {
     @GetMapping("/api/files")
     public Object getFiles(
         final @RequestParam(name = "query") String queryStr) {
-        return fileRepository.query(queryStr);
+        Map.Entry<Integer, List<FileEntry>> results =
+            fileRepository.query(queryStr);
+
+        return new FileQueryResponse(
+            results.getKey(),
+            results.getValue()
+        );
     }
 
     @GetMapping("/api/files/{fileId}")

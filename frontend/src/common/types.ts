@@ -4,7 +4,7 @@ export interface TaggerFile {
 }
 
 export interface TaggerFileQueryResponse {
-    totalResultsCount: number,
+    totalResultsCount?: number,
     results?: TaggerFile[]
 }
 
