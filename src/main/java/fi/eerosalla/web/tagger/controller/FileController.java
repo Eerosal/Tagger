@@ -1,12 +1,14 @@
 package fi.eerosalla.web.tagger.controller;
 
 import fi.eerosalla.web.tagger.model.response.FileQueryResponse;
+import fi.eerosalla.web.tagger.model.response.FileResponse;
 import fi.eerosalla.web.tagger.repository.connection.ConnectionEntry;
 import fi.eerosalla.web.tagger.repository.connection.ConnectionRepository;
 import fi.eerosalla.web.tagger.repository.file.FileEntry;
 import fi.eerosalla.web.tagger.repository.file.FileRepository;
 import fi.eerosalla.web.tagger.repository.tag.TagEntry;
 import fi.eerosalla.web.tagger.repository.tag.TagRepository;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +39,9 @@ public class FileController {
         FileEntry fileEntry = new FileEntry();
         fileEntry.setName(filename);
 
-        return fileRepository.create(fileEntry);
+        return new FileResponse(
+            fileRepository.create(fileEntry)
+        );
     }
 
     private final TagRepository tagRepository;
@@ -110,6 +114,7 @@ public class FileController {
         );
     }
 
+    @SneakyThrows
     @GetMapping("/api/files/{fileId}")
     public Object getFile(
         final @PathVariable int fileId) {
@@ -122,6 +127,19 @@ public class FileController {
             );
         }
 
-        return file;
+        final var queryBuilder = tagRepository.getHandle().queryBuilder();
+
+        queryBuilder.where()
+            .in("id",
+                connectionRepository.getFileMatchQuery(file)
+                    .selectColumns("tagId")
+            );
+
+        List<TagEntry> tags = queryBuilder.query();
+
+        return new FileResponse(
+            file,
+            tags
+        );
     }
 }

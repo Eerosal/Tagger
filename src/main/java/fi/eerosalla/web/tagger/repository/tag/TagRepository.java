@@ -11,17 +11,19 @@ import java.util.Collection;
 @Repository
 public class TagRepository extends CrudRepository<TagEntry, Integer> {
 
+
+
     public TagRepository(final ConnectionSource connectionSource) {
         super(connectionSource, TagEntry.class);
     }
 
     @SneakyThrows
     public QueryBuilder<TagEntry, Integer> getNameQuery(
-            final Collection<String> tagNames) {
+        final Collection<String> tagNames) {
         final var queryBuilder = getHandle().queryBuilder();
 
         queryBuilder.where()
-                .in("name", tagNames);
+            .in("name", tagNames);
 
         return queryBuilder;
     }

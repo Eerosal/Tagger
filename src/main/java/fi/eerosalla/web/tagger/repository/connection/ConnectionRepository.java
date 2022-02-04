@@ -3,6 +3,7 @@ package fi.eerosalla.web.tagger.repository.connection;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import fi.eerosalla.web.tagger.repository.CrudRepository;
+import fi.eerosalla.web.tagger.repository.file.FileEntry;
 import fi.eerosalla.web.tagger.repository.tag.TagRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,17 @@ public class ConnectionRepository extends
                 tagRepository.getNameQuery(tagNames)
             ).groupBy("fileId")
             .having("COUNT(1) = " + tagNames.size());
+    }
+
+    @SneakyThrows
+    public QueryBuilder<ConnectionEntry, Integer> getFileMatchQuery(
+        final FileEntry fileEntry) {
+
+        final var queryBuilder = getHandle().queryBuilder();
+
+        queryBuilder.where()
+            .eq("fileId", fileEntry.getId());
+
+        return queryBuilder;
     }
 }
