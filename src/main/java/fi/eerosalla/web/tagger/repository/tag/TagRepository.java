@@ -11,8 +11,6 @@ import java.util.Collection;
 @Repository
 public class TagRepository extends CrudRepository<TagEntry, Integer> {
 
-
-
     public TagRepository(final ConnectionSource connectionSource) {
         super(connectionSource, TagEntry.class);
     }

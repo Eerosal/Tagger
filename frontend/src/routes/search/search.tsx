@@ -1,106 +1,14 @@
 import "./search.css";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ChangeEvent, useEffect, useState } from "react";
-import filesService from "../../services/filesService";
-import { TaggerFileQueryResponse } from "../../common/types";
-
-interface PaginatorProps {
-    page: number,
-    totalPageCount: number,
-}
-
-const PAGE_SIZE = 24;
-
-function Paginator(props: PaginatorProps) {
-    const [urlSearchParams] = useSearchParams();
-    const { page, totalPageCount } = props;
-
-    if(!page || !totalPageCount){
-        return null;
-    }
-
-    return (
-        <menu>
-            <ul>
-                {
-                    Array.from(
-                        { length: 7 },
-                        (_: number, i: number) => i
-                    ).map(i => (
-                        <li
-                            className="paginatorLink"
-                            key={i}
-                        >
-                            {
-                                (() => {
-                                    const lastPage =
-                                        totalPageCount;
-
-                                    const showRightDots =
-                                        page < lastPage - 3;
-
-                                    let number;
-                                    if (i === 0) {
-                                        number = 1;
-                                    } else if (i === 6
-                                        && showRightDots) {
-                                        number = lastPage;
-                                    } else {
-                                        number = Math.max(
-                                            page - 3, 1
-                                        ) + i;
-                                    }
-
-                                    if (number === page) {
-                                        return (
-                                            <span>
-                                                <b>{number}</b>
-                                            </span>
-                                        );
-                                    }
-
-
-                                    if (number > lastPage) return null;
-
-                                    if ((i === 1
-                                            && page > 3)
-                                        || (i === 5 && showRightDots)) {
-                                        return (
-                                            <span>...</span>
-                                        );
-                                    }
-
-                                    const urlParams =
-                                        new URLSearchParams({
-                                            query: urlSearchParams.get("query"),
-                                            page: `${number}`
-                                        });
-
-                                    const path = `/search?${
-                                        urlParams.toString()}`;
-
-                                    return (
-                                        <span>
-                                            <Link to={path}>
-                                                {number}
-                                            </Link>
-                                        </span>
-                                    );
-                                })()
-                            }
-                        </li>
-                    ))
-                }
-            </ul>
-        </menu>
-    );
-}
+import FileSearchContainer from
+    "../../components/FileSearchContainer/fileSearchContainer";
 
 
 export default function Search() {
     const navigate = useNavigate();
 
-    const [urlSearchParams, setUrlSearchParams] = useSearchParams();
+    const [urlSearchParams] = useSearchParams();
 
     const getPageFromParams = () => {
         const pageUrlParam = urlSearchParams.get("page");
@@ -110,9 +18,8 @@ export default function Search() {
         return 1;
     }
 
-    const [response, setResponse] = useState<TaggerFileQueryResponse>();
     const [page, setPage] = useState<number>(getPageFromParams());
-    const [totalPageCount, setTotalPageCount] = useState<number>(0);
+    const [query, setQuery] = useState<string>("");
 
     const [searchInputValue, setSearchInputValue] =
         useState<string>("");
@@ -124,24 +31,9 @@ export default function Search() {
         );
 
         const newQuery = urlSearchParams.get("query") || "";
-        setSearchInputValue(
+        setQuery(
             newQuery
         );
-
-        const fullQuery =
-            `${newQuery} page_size:${PAGE_SIZE} page:${newPage}`;
-
-        (async () => {
-            const newResponse = await filesService.query(fullQuery);
-
-            setTotalPageCount(
-                Math.floor(
-                    newResponse.totalResultsCount / PAGE_SIZE
-                ) + 1
-            );
-
-            setResponse(newResponse);
-        })();
     }, [urlSearchParams]);
 
     return (
@@ -167,29 +59,11 @@ export default function Search() {
                     navigate(url);
                 }}
             />
-            {
-                response &&
-                <>
-                    <div className="searchResults">
-                        {
-                            response.results &&
-                            response.results.map(result => (
-                                <div key={result.id} className="searchResult">
-                                    <Link to={`/files/${result.id}`}>
-                                        <h4>{result.id} {result.name}</h4>
-                                    </Link>
-                                </div>
-                            ))
-                        }
-                    </div>
-                    {
-                        response.totalResultsCount > 0 &&
-                        <Paginator
-                            page={page} totalPageCount={totalPageCount}
-                        />
-                    }
-                </>
-            }
+            <FileSearchContainer
+                page={page}
+                pageSize={24}
+                query={query.length > 0? query : "order:id_desc"}
+            />
         </main>
     );
 }

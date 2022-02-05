@@ -18,9 +18,9 @@ export default function Upload() {
             return;
         }
 
-        let uploadedFile;
+        let uploadedFileResponse;
         try {
-            uploadedFile = await filesService.upload({
+            uploadedFileResponse = await filesService.upload({
                 filename
             });
         } catch (e) {
@@ -29,12 +29,12 @@ export default function Upload() {
             return;
         }
 
-        if (uploadedFile) {
+        if (uploadedFileResponse) {
             navigate(
-                `/files/${uploadedFile.id}`,
+                `/files/${uploadedFileResponse.file.id}`,
                 {
                     state: {
-                        uploadedFile
+                        uploadedFileResponse
                     }
                 }
             );

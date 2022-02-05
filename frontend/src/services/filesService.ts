@@ -1,5 +1,5 @@
 import axios from "axios";
-import { TaggerFileQueryResponse } from "../common/types";
+import { TaggerFileQueryResponse, TaggerFileResponse } from "../common/types";
 
 const query = async (queryStr: string): Promise<TaggerFileQueryResponse> => {
     const searchParams = new URLSearchParams(
@@ -18,7 +18,7 @@ interface UploadForm {
     filename: string
 }
 
-const upload = async (uploadForm: UploadForm) => {
+const upload = async (uploadForm: UploadForm): Promise<TaggerFileResponse> => {
     const formData = new FormData();
     formData.append("filename", uploadForm.filename);
 
@@ -30,15 +30,38 @@ const upload = async (uploadForm: UploadForm) => {
     return response.json();
 };
 
-const getById = async (id: number) => {
+const get = async (id: number): Promise<TaggerFileResponse> => {
     const response = await axios.get(`/api/files/${id}`);
     return response.data;
-}
+};
+
+const removeTags = async (id: number, tagIds: number[]):
+    Promise<TaggerFileResponse> => {
+    const response = await axios.delete(`/api/files/${id}/remove-tags`, {
+        data: {
+            tagIds
+        }
+    });
+
+    return response.data;
+};
+
+const addTags = async (id: number, tagIds: number[]):
+    Promise<TaggerFileResponse> => {
+    const response = await axios.post(`/api/files/${id}/add-tags`, {
+        tagIds
+    });
+
+    return response.data;
+};
+
 
 const actions = {
     query,
     upload,
-    getById,
+    get,
+    removeTags,
+    addTags
 };
 
 export default actions;
