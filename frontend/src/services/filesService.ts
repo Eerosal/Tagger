@@ -15,12 +15,14 @@ const query = async (queryStr: string): Promise<TaggerFileQueryResponse> => {
 };
 
 interface UploadForm {
-    filename: string
+    filename: string,
+    file: File,
 }
 
 const upload = async (uploadForm: UploadForm): Promise<TaggerFileResponse> => {
     const formData = new FormData();
     formData.append("filename", uploadForm.filename);
+    formData.append("file", uploadForm.file);
 
     const response = await fetch("/api/files", {
         method: "POST",

@@ -1,6 +1,7 @@
 export interface TaggerFile {
     id?: number,
-    name: string
+    name: string,
+    extension?: string
 }
 
 export interface TaggerTag {

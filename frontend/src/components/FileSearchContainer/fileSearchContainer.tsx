@@ -1,15 +1,64 @@
+import VideoThumbnail from "./thumbnails/videoThumbnail.svg";
+import "./fileSearchContainer.css";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { TaggerFileQueryResponse } from "../../common/types";
+import { TaggerFile, TaggerFileQueryResponse } from "../../common/types";
 import filesService from "../../services/filesService";
 import Paginator from "../Paginator/paginator";
 import Spinner from "../Spinner/spinner";
+
+interface ThumbnailProps {
+    result: TaggerFile;
+}
+
+function Thumbnail(props: ThumbnailProps) {
+    const { result } = props;
+
+    switch (result.extension) {
+    case "png":
+    case "jpg":
+    case "gif":
+        return (
+            <img
+                src={
+                    `${MINIO_URL}/tg-thumbnails/`
+                        + `${result.id}_thumbnail.jpg`
+                }
+                alt={
+                    result.name
+                }
+            />
+        );
+        break;
+    case "mp4":
+        return (
+            <>
+                <div>
+                    <img
+                        src={VideoThumbnail}
+                        alt={
+                            result.name
+                        }
+                    />
+                </div>
+                <div className="videoFilename">
+                    <p>{result.name}</p>
+                </div>
+            </>
+        );
+        break;
+    }
+
+    return null;
+}
 
 interface SearchProps {
     query: string,
     page: number,
     pageSize: number,
 }
+
+const { REACT_APP_MINIO_URL: MINIO_URL } = process.env;
 
 export default function FileSearchContainer(props: SearchProps) {
     const { query, page, pageSize } = props;
@@ -40,28 +89,33 @@ export default function FileSearchContainer(props: SearchProps) {
         })();
     }, [page, pageSize, query]);
 
-    if(loading){
+    if (loading) {
         return <Spinner />;
     }
 
     return (
         <>
             {
-                loading?
+                loading ?
                     <Spinner />
                     :
                     <div className="searchResults">
                         {
                             response.results &&
                             response.results.map(result => (
-                                <div
+                                <Link
+                                    to={`/files/${result.id}`}
                                     key={result.id}
-                                    className="searchResult"
                                 >
-                                    <Link to={`/files/${result.id}`}>
-                                        <h4>{result.id} {result.name}</h4>
-                                    </Link>
-                                </div>
+                                    <div
+                                        className="searchResult"
+                                    >
+
+                                        <Thumbnail
+                                            result={result}
+                                        />
+                                    </div>
+                                </Link>
                             ))
                         }
                     </div>

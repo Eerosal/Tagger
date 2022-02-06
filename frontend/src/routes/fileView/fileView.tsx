@@ -3,8 +3,10 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import filesService from "../../services/filesService";
 import {
-    FileViewState, TaggerFileResponse } from "../../common/types";
+    FileViewState, TaggerFileResponse
+} from "../../common/types";
 import tagsService from "../../services/tagsService";
+import FileContainer from "../../components/FileContainer/fileContainer";
 
 interface TagContainerProps {
     response: TaggerFileResponse,
@@ -19,7 +21,7 @@ function TagContainer(props: TagContainerProps) {
             await filesService.removeTags(response.file.id, [tagId]);
 
         setResponse(newResponse);
-    }
+    };
 
     const addTags = async () => {
         const tagInput = prompt("Enter new tags separated by spaces");
@@ -34,7 +36,7 @@ function TagContainer(props: TagContainerProps) {
             );
 
         setResponse(newResponse);
-    }
+    };
 
     return (
         <ul className="tagContainer">
@@ -66,12 +68,13 @@ function TagContainer(props: TagContainerProps) {
                 </a>
             </li>
         </ul>
-    )
+    );
 }
 
 export default function FileView() {
     const navigate = useNavigate();
     const { fileId: fileIdParam } = useParams();
+    const [expanded, setExpanded] = useState<boolean>(false);
     const [response, setResponse] =
         useState<TaggerFileResponse>(null);
     const { state } = useLocation();
@@ -79,21 +82,21 @@ export default function FileView() {
 
     useEffect(() => {
         const fileId = parseInt(fileIdParam, 10);
-        if(!fileId || isNaN(fileId)){
+        if (!fileId || isNaN(fileId)) {
             return;
         }
 
         (async () => {
             let newResponse: TaggerFileResponse;
-            if(uploadedFileResponse
-                && uploadedFileResponse.file.id === fileId){
+            if (uploadedFileResponse
+                && uploadedFileResponse.file.id === fileId) {
                 newResponse = uploadedFileResponse;
             } else {
                 try {
                     newResponse = await filesService.get(fileId);
-                } catch (e){
-                    if(e.response
-                        && e.response.status === 404){
+                } catch (e) {
+                    if (e.response
+                        && e.response.status === 404) {
                         navigate("/404");
                     } else {
                         alert(e);
@@ -101,8 +104,8 @@ export default function FileView() {
                 }
             }
 
-            if(newResponse
-                && newResponse.file){
+            if (newResponse
+                && newResponse.file) {
                 setResponse(newResponse);
             } else {
                 setResponse(null);
@@ -119,6 +122,23 @@ export default function FileView() {
                     <h3>
                         {response.file.id} {response.file.name}
                     </h3>
+                    <a
+                        href="#"
+                        onClick={() => {
+                            setExpanded(!expanded);
+                        }}
+                    >
+                        <div
+                            className={
+                                expanded ?
+                                    "fileContainerExpanded" : "fileContainer"
+                            }
+                        >
+                            <FileContainer
+                                response={response}
+                            />
+                        </div>
+                    </a>
                     <TagContainer
                         response={response}
                         setResponse={setResponse}

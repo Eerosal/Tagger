@@ -1,3 +1,11 @@
 .tagContainerEntry {
     list-style-type: none;
 }
+
+.fileContainer > *{
+    max-width: 93%
+}
+
+.fileContainerExpanded {
+
+}

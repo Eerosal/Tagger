@@ -19,8 +19,8 @@ public class DatabaseConfig {
     private String jdbcStr;
 
     @Bean
-    @SneakyThrows
     @JsonIgnore
+    @SneakyThrows
     public ConnectionSource connectionSource() {
         return new JdbcConnectionSource(this.getJdbcStr());
     }

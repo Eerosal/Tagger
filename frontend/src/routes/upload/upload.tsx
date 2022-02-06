@@ -6,22 +6,31 @@ import filesService from "../../services/filesService";
 
 export default function Upload() {
     const [filename, setFilename] = useState("");
+    const fileInput = React.createRef<HTMLInputElement>();
     const navigate = useNavigate();
 
     const onUploadFormSubmit = async (
         event: React.SyntheticEvent) => {
         event.preventDefault();
 
-        if (!filename) {
-            alert("No input filename specified");
+        if(!fileInput.current || fileInput.current.files.length === 0) {
+            alert("No file specified");
 
             return;
+        }
+
+        let uploadFilename;
+        if(filename && filename.length > 0){
+            uploadFilename = filename;
+        } else {
+            uploadFilename = fileInput.current.files[0].name;
         }
 
         let uploadedFileResponse;
         try {
             uploadedFileResponse = await filesService.upload({
-                filename
+                filename: uploadFilename,
+                file: fileInput.current.files[0]
             });
         } catch (e) {
             alert(e);
@@ -58,6 +67,14 @@ export default function Upload() {
                                     setFilename(event.target.value);
                                 }
                             }
+                        />
+                    </label>
+                    <br />
+                    <label>
+                        File<br />
+                        <input
+                            type="file"
+                            ref={fileInput}
                         />
                     </label>
                     <br />

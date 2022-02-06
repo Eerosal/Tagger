@@ -1,3 +1,4 @@
+import "./paginator.css";
 import { Link, useSearchParams } from "react-router-dom";
 
 interface PaginatorProps {

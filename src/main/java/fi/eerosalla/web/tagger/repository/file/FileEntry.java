@@ -25,4 +25,7 @@ public class FileEntry {
     @Column
     private String name;
 
+    // jpg/png/gif etc.
+    @Column
+    private String extension;
 }
