@@ -79,21 +79,21 @@ public class MinioConfig {
 
             boolean bucketExists =
                 client.bucketExists(bucketExistsArgs);
-            if (bucketExists) {
-                continue;
+            if (!bucketExists) {
+                MakeBucketArgs makeBucketArgs =
+                    MakeBucketArgs.builder()
+                        .bucket(bucketName)
+                        .build();
+                client.makeBucket(makeBucketArgs);
             }
 
-            MakeBucketArgs makeBucketArgs =
-                MakeBucketArgs.builder()
-                    .bucket(bucketName)
-                    .build();
-            client.makeBucket(makeBucketArgs);
+
 
             BucketPolicy bucketPolicy = new BucketPolicy(
                 "2012-10-17",
                 List.of(
                     new StatementEntry(
-                        "Allow",
+                        "Allow", //TODO:
                         Map.of("AWS", List.of("*")),
                         List.of("s3:GetObject"),
                         List.of("arn:aws:s3:::" + bucketName + "/*")

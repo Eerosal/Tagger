@@ -10,6 +10,7 @@ import fi.eerosalla.web.tagger.repository.file.FileRepository;
 import fi.eerosalla.web.tagger.repository.tag.TagEntry;
 import fi.eerosalla.web.tagger.repository.tag.TagRepository;
 import fi.eerosalla.web.tagger.util.FileUtil;
+import fi.eerosalla.web.tagger.util.MinioUtil;
 import io.minio.MinioClient;
 import io.minio.UploadObjectArgs;
 import lombok.SneakyThrows;
@@ -27,15 +28,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import javax.validation.constraints.NotNull;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 @RestController
 public class FileController {
@@ -163,78 +159,51 @@ public class FileController {
 
         // TODO: btw, this overwrites files
         FileUtil.getTempFile(internalFilename,
-            new Consumer<>() {
-                @SneakyThrows
-                @Override
-                public void accept(final File tempFile) {
+            tempFile -> {
+                try {
                     multipartFile.transferTo(tempFile);
 
-                    // TODO: bork for mp4
-                    if(!extension.equals("mp4")) {
-                        FileUtil.getTempFile(thumbnailFilename,
-                            new Consumer<>() {
-                                @SneakyThrows
-                                @Override
-                                public void accept(final File tempFile2) {
-                                    Image originalImage = ImageIO.read(tempFile);
-
-                                    int width = originalImage.getWidth(null);
-                                    int height = originalImage.getHeight(null);
-
-                                    if (width > 150) {
-                                        double scaleFactor = 150.0
-                                            / (double) width;
-                                        width = 150;
-                                        height = (int) (scaleFactor * height);
-                                    }
-
-                                    if (height > 150) {
-                                        double scaleFactor = 150.0
-                                            / (double) height;
-                                        height = 150;
-                                        width = (int) (scaleFactor * width);
-                                    }
-
-                                    BufferedImage scaledImage = new BufferedImage(
-                                        width, height, BufferedImage.TYPE_INT_RGB
-                                    );
-
-                                    scaledImage.createGraphics()
-                                        .drawImage(
-                                            originalImage.getScaledInstance(
-                                                width,
-                                                height,
-                                                BufferedImage.SCALE_SMOOTH
-                                            ), 0, 0, null
-                                        );
-
-                                    ImageIO.write(scaledImage, "jpg", tempFile2);
-
-                                    UploadObjectArgs.Builder uploadBuilder =
-                                        UploadObjectArgs.builder();
-
-                                    uploadBuilder.bucket("tg-thumbnails");
-                                    uploadBuilder.object(thumbnailFilename);
-                                    uploadBuilder.filename(
-                                        tempFile2.getCanonicalPath()
-                                    );
-                                    uploadBuilder.contentType(mimetype);
-
-                                    minioClient.uploadObject(uploadBuilder.build());
-                                }
-                            }
+                    UploadObjectArgs uploadObjectArgs =
+                        MinioUtil.createUploadObjectArgs(
+                            "tg-files",
+                            internalFilename,
+                            tempFile.getCanonicalPath(),
+                            mimetype
                         );
-                    }
 
-                    UploadObjectArgs.Builder uploadBuilder =
-                        UploadObjectArgs.builder();
+                    minioClient.uploadObject(uploadObjectArgs);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                    uploadBuilder.bucket("tg-files");
-                    uploadBuilder.object(internalFilename);
-                    uploadBuilder.filename(tempFile.getCanonicalPath());
-                    uploadBuilder.contentType(mimetype);
+                // TODO: bork for mp4
+                if (!extension.equals("mp4")) {
+                    FileUtil.getTempFile(thumbnailFilename,
+                        tempFile2 -> {
+                            FileUtil.createThumbnail(
+                                tempFile,
+                                tempFile2,
+                                150,
+                                150
+                            );
 
-                    minioClient.uploadObject(uploadBuilder.build());
+                            try {
+                                UploadObjectArgs uploadObjectArgs =
+                                    MinioUtil.createUploadObjectArgs(
+                                        "tg-thumbnails",
+                                        thumbnailFilename,
+                                        tempFile2.getCanonicalPath(),
+                                        "image/jpeg"
+                                    );
+
+                                minioClient.uploadObject(
+                                    uploadObjectArgs
+                                );
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    );
                 }
             }
         );
