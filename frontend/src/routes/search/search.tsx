@@ -1,69 +1,47 @@
 import "./search.css";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { ChangeEvent, useEffect, useState } from "react";
-import FileSearchContainer from
-    "../../components/FileSearchContainer/fileSearchContainer";
+import { useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import FileSearch from "../../components/FileSearch";
 
+interface SearchState {
+    query: string,
+    page: number,
+}
 
 export default function Search() {
-    const navigate = useNavigate();
-
     const [urlSearchParams] = useSearchParams();
-
-    const getPageFromParams = () => {
-        const pageUrlParam = urlSearchParams.get("page");
-        if (pageUrlParam) {
-            return parseInt(pageUrlParam, 10) || 1;
-        }
-        return 1;
-    }
-
-    const [page, setPage] = useState<number>(getPageFromParams());
-    const [query, setQuery] = useState<string>("");
-
-    const [searchInputValue, setSearchInputValue] =
-        useState<string>("");
+    const [state, setState] = useState<SearchState>();
 
     useEffect(() => {
-        const newPage: number = getPageFromParams();
-        setPage(
-            newPage
-        );
+        const queryParam = urlSearchParams.get("query");
 
-        const newQuery = urlSearchParams.get("query") || "";
-        setQuery(
-            newQuery
-        );
-    }, [urlSearchParams]);
+        let query;
+        if(queryParam && queryParam.length > 0){
+            query = queryParam;
+        } else {
+            query = "order:id_desc";
+        }
+
+        const page: number =
+            parseInt(urlSearchParams.get("page"), 10) || 1;
+
+        setState({
+            query,
+            page,
+        })
+    }, [urlSearchParams])
+
 
     return (
         <main>
             <h2>Search</h2>
-            <input
-                type="text"
-                placeholder="search terms"
-                onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                    setSearchInputValue(event.target.value);
-                }}
-                value={searchInputValue}
-            />
-            <input
-                type="submit" value="Search"
-                onClick={() => {
-                    const params = new URLSearchParams({
-                        query: searchInputValue
-                    });
-
-                    const url = `/search?${params.toString()}`;
-
-                    navigate(url);
-                }}
-            />
-            <FileSearchContainer
-                page={page}
-                pageSize={24}
-                query={query.length > 0? query : "order:id_desc"}
-            />
+            {
+                state &&
+                <FileSearch
+                    query={state.query}
+                    page={state.page}
+                />
+            }
         </main>
     );
 }

@@ -1,11 +1,15 @@
-import FileSearchContainer from
-    "../../components/FileSearchContainer/fileSearchContainer";
+import FileSearch from "../../components/FileSearch";
+
 
 export default function Home() {
     return (
         <main>
             <h2>Index</h2>
-            <FileSearchContainer query="order:id_desc" page={1} pageSize={24} />
+            <FileSearch
+                query="order:id_desc"
+                page={1}
+                paginator={false}
+            />
         </main>
     )
 }

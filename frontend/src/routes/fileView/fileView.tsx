@@ -6,7 +6,7 @@ import {
     FileViewState, TaggerFileResponse
 } from "../../common/types";
 import tagsService from "../../services/tagsService";
-import FileContainer from "../../components/FileContainer/fileContainer";
+import FileContainer from "../../components/FileContainer";
 
 interface TagContainerProps {
     response: TaggerFileResponse,
@@ -135,7 +135,7 @@ export default function FileView() {
                             }
                         >
                             <FileContainer
-                                response={response}
+                                file={response.file}
                             />
                         </div>
                     </a>

@@ -5,11 +5,11 @@ import Home from "./routes/home/home";
 import Search from "./routes/search/search";
 import Upload from "./routes/upload/upload";
 import FileView from "./routes/fileView/fileView";
-import Navbar from "./components/Navbar/navbar";
-import PrivateOutlet from "./components/PrivateOutlet/privateOutlet";
+import Navbar from "./components/Navbar";
+import PrivateOutlet from "./components/PrivateOutlet";
 
 function App() {
-    const [authenticated, setAuthenticated] = useState<boolean>(false);
+    const [authenticated, setAuthenticated] = useState<boolean>(true);
 
     return (
         <div className="app">

@@ -1,5 +1,5 @@
-import "./spinner.css";
-import SpinnerImage from "./spinner.svg";
+import "./Spinner.css";
+import SpinnerImage from "../assets/img/spinner.svg";
 
 export default function Spinner(){
     return (

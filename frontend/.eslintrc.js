@@ -25,7 +25,7 @@ module.exports = {
     ],
     "rules": {
         quotes: [2, "double", { avoidEscape: true }],
-        indent: ["error", 4],
+        indent: ["error", 4, { SwitchCase: 1}],
         "max-len": ["error", { code: 80 }],
         "no-param-reassign": [2, { props: false }],
         "import/extensions": "off",
@@ -42,7 +42,7 @@ module.exports = {
             "required": {
                 "some": ["nesting", "id"]
             }
-        }]
+        }],
     },
     "settings": {
         "import/resolver": {
