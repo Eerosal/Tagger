@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import authService from "../services/authService";
-import { Session } from "../common/types";
-import { JwtTokenContext } from "../components/Authentication";
+import { JwtTokenContext }
+    from "../components/Authentication";
 
 export default function Login() {
-    const { jwtToken, setJwtToken } = useContext<any>(JwtTokenContext);
+    const { setJwtToken } = useContext(JwtTokenContext);
 
     const navigate = useNavigate();
 
@@ -25,7 +25,7 @@ export default function Login() {
                 navigate("/");
             }
         } catch (e) {
-            if(e.response
+            if (e.response
                 && e.response.data.error) {
                 alert(e.response.data.error);
             } else {

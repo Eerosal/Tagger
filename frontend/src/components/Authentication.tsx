@@ -5,12 +5,17 @@ import authService from "../services/authService";
 
 const JWT_TOKEN_TTL = 60 * 2;
 
-// TODO: fix any
-export const JwtTokenContext = React.createContext<any>({
-    jwtToken: "",
-    setJwtToken: () => {
-    }
-});
+interface JwtTokenContextState {
+    jwtToken: string,
+    setJwtToken: (jwtToken: string) => void
+}
+
+export const JwtTokenContext =
+    React.createContext<JwtTokenContextState>({
+        jwtToken: "",
+        setJwtToken: (jwtToken: string) => {
+        }
+    });
 
 interface AuthenticationProps {
     children: JSX.Element | JSX.Element[];
@@ -28,7 +33,7 @@ export function Authentication(props: AuthenticationProps) {
 
     const getSession = () => JSON.parse(
         localStorage.taggerSession
-    ) as Session
+    ) as Session;
 
     const renewToken = async (session: Session) => {
         if (!session) {
@@ -52,8 +57,8 @@ export function Authentication(props: AuthenticationProps) {
     };
 
     useEffect(() => {
-        if(!jwtToken
-            || jwtToken.length === 0){
+        if (!jwtToken
+            || jwtToken.length === 0) {
             setAuthenticated(false);
         } else {
             const newSession = {
@@ -70,14 +75,14 @@ export function Authentication(props: AuthenticationProps) {
     }, [jwtToken]);
 
     useEffect(() => {
-        if(!authenticated){
+        if (!authenticated) {
             return null;
         }
 
         const interval = window.setInterval(async () => {
             const session = getSession();
 
-            if(!session){
+            if (!session) {
                 setJwtToken("");
                 setAuthenticated(false);
 
@@ -88,7 +93,7 @@ export function Authentication(props: AuthenticationProps) {
             const lastUpdate = session.updatedAt;
 
             const diff = (now - lastUpdate);
-            if(diff < JWT_TOKEN_TTL / 3){
+            if (diff < JWT_TOKEN_TTL / 3) {
                 return;
             }
 
@@ -97,7 +102,7 @@ export function Authentication(props: AuthenticationProps) {
 
         return () => {
             window.clearInterval(interval);
-        }
+        };
     }, [authenticated]);
 
     useEffect(() => {
