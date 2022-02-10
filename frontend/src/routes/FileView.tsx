@@ -1,12 +1,13 @@
 import "./FileView.css";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import filesService from "../services/filesService";
 import {
     FileViewState, TaggerFileResponse
 } from "../common/types";
 import tagsService from "../services/tagsService";
 import FileContainer from "../components/FileContainer";
+import { JwtTokenContext } from "../components/Authentication";
 
 interface TagContainerProps {
     response: TaggerFileResponse,
@@ -15,10 +16,13 @@ interface TagContainerProps {
 
 function TagContainer(props: TagContainerProps) {
     const { response, setResponse } = props;
+    const { jwtToken } = useContext(JwtTokenContext);
 
     const removeTag = async (tagId: number) => {
         const newResponse =
-            await filesService.removeTags(response.file.id, [tagId]);
+            await filesService.removeTags(
+                jwtToken, response.file.id, [tagId]
+            );
 
         setResponse(newResponse);
     };
@@ -27,10 +31,14 @@ function TagContainer(props: TagContainerProps) {
         const tagInput = prompt("Enter new tags separated by spaces");
 
         const newTagNames = tagInput.split(" ");
-        const newTagIds = await tagsService.getByNamesOrCreate(newTagNames);
+        const newTagIds = await tagsService.getByNamesOrCreate(
+            jwtToken,
+            newTagNames
+        );
 
         const newResponse =
             await filesService.addTags(
+                jwtToken,
                 response.file.id,
                 newTagIds.map(tag => tag.id)
             );
@@ -79,6 +87,7 @@ export default function FileView() {
         useState<TaggerFileResponse>(null);
     const { state } = useLocation();
     const { uploadedFileResponse } = (state || {}) as FileViewState;
+    const { jwtToken } = useContext(JwtTokenContext);
 
     useEffect(() => {
         const fileId = parseInt(fileIdParam, 10);
@@ -93,7 +102,7 @@ export default function FileView() {
                 newResponse = uploadedFileResponse;
             } else {
                 try {
-                    newResponse = await filesService.get(fileId);
+                    newResponse = await filesService.get(jwtToken, fileId);
                 } catch (e) {
                     if (e.response
                         && e.response.status === 404) {

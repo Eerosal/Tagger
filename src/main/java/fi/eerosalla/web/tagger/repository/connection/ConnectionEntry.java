@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @NoArgsConstructor
 @Getter
@@ -18,6 +19,7 @@ import javax.persistence.SequenceGenerator;
     name = "idgen",
     sequenceName = "connectionseq"
 )
+@Table(name = "tg_connections")
 public class ConnectionEntry {
 
     @Id

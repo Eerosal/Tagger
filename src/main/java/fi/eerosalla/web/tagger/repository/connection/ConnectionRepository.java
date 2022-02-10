@@ -1,6 +1,5 @@
 package fi.eerosalla.web.tagger.repository.connection;
 
-import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import fi.eerosalla.web.tagger.repository.CrudRepository;

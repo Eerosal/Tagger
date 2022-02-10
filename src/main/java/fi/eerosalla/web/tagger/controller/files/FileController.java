@@ -9,6 +9,7 @@ import fi.eerosalla.web.tagger.repository.file.FileEntry;
 import fi.eerosalla.web.tagger.repository.file.FileRepository;
 import fi.eerosalla.web.tagger.repository.tag.TagEntry;
 import fi.eerosalla.web.tagger.repository.tag.TagRepository;
+import fi.eerosalla.web.tagger.security.AccessRole;
 import fi.eerosalla.web.tagger.util.FileUtil;
 import fi.eerosalla.web.tagger.util.MinioUtil;
 import io.minio.MinioClient;
@@ -28,11 +29,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RolesAllowed(AccessRole.ADMIN)
 @RestController
 public class FileController {
 

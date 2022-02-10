@@ -10,8 +10,8 @@ export interface TaggerTag {
 }
 
 export interface TaggerFileQueryResponse {
-    totalResultsCount?: number,
-    results?: TaggerFile[]
+    totalResultsCount: number,
+    results: TaggerFile[]
 }
 
 export interface TaggerFileResponse {
@@ -21,4 +21,9 @@ export interface TaggerFileResponse {
 
 export interface FileViewState {
     uploadedFileResponse?: TaggerFileResponse
+}
+
+export interface Session {
+    token: string,
+    updatedAt: number
 }

@@ -1,6 +1,6 @@
 import "./Search.css";
-import { useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { ChangeEvent, useEffect, useState } from "react";
 import FileSearch from "../components/FileSearch";
 
 interface SearchState {
@@ -11,6 +11,8 @@ interface SearchState {
 export default function Search() {
     const [urlSearchParams] = useSearchParams();
     const [state, setState] = useState<SearchState>();
+    const [queryInputValue, setQueryInputValue] = useState<string>();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const queryParam = urlSearchParams.get("query");
@@ -29,12 +31,31 @@ export default function Search() {
             query,
             page,
         })
-    }, [urlSearchParams])
-
+    }, [urlSearchParams]);
 
     return (
         <main>
             <h2>Search</h2>
+            <input
+                type="text"
+                placeholder="search terms"
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                    setQueryInputValue(event.target.value);
+                }}
+                value={queryInputValue}
+            />
+            <input
+                type="submit" value="Search"
+                onClick={() => {
+                    const params = new URLSearchParams({
+                        query: queryInputValue
+                    });
+
+                    const url = `/search?${params.toString()}`;
+
+                    navigate(url);
+                }}
+            />
             {
                 state &&
                 <FileSearch

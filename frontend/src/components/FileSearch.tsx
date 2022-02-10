@@ -1,11 +1,12 @@
 import "./FileSearch.css";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { TaggerFile, TaggerFileQueryResponse } from "../common/types";
 import filesService from "../services/filesService";
 import Paginator from "./Paginator";
 import VideoThumbnail from "../assets/img/video_thumbnail.svg";
 import Spinner from "./Spinner";
+import { JwtTokenContext } from "./Authentication";
 
 const { REACT_APP_MINIO_URL: MINIO_URL } = process.env;
 
@@ -70,6 +71,8 @@ interface FileSearchProps {
 
 function FileSearch(props: FileSearchProps) {
     const { query, page, pageSize, paginator } = props;
+    const { jwtToken } = useContext(JwtTokenContext);
+
 
     const [response, setResponse] =
         useState<TaggerFileQueryResponse>(null);
@@ -85,7 +88,8 @@ function FileSearch(props: FileSearchProps) {
 
         (async () => {
             try {
-                const newResponse = await filesService.query(fullQuery);
+                const newResponse =
+                    await filesService.query(jwtToken, fullQuery);
 
                 setResponse(newResponse);
             } catch (e) {
@@ -96,6 +100,7 @@ function FileSearch(props: FileSearchProps) {
 
     return response ?
         <div className="file-search">
+
             <div className="file-search__results-container">
                 {
                     response.results.map((result) => (
@@ -122,7 +127,7 @@ function FileSearch(props: FileSearchProps) {
 
 FileSearch.defaultProps = {
     pageSize: 24,
-    paginator: true,
+    paginator: true
 };
 
 export default FileSearch;
