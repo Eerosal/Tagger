@@ -1,5 +1,6 @@
 package fi.eerosalla.web.tagger.repository.user;
 
+import com.j256.ormlite.field.DatabaseField;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,13 +25,13 @@ public class UserEntry {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idgen")
     private Integer id;
 
-    @Column
+    @DatabaseField(uniqueIndexName = "idx_user_username")
     private String username;
 
     @Column
     private String passwordHash;
 
-    @Column
+    @DatabaseField(indexName = "idx_user_role")
     private String role;
 
 }

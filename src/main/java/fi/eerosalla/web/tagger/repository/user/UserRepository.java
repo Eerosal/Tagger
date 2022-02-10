@@ -1,5 +1,6 @@
 package fi.eerosalla.web.tagger.repository.user;
 
+import com.j256.ormlite.dao.LruObjectCache;
 import com.j256.ormlite.support.ConnectionSource;
 import fi.eerosalla.web.tagger.repository.CrudRepository;
 import fi.eerosalla.web.tagger.security.AccessRole;
@@ -11,10 +12,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserRepository extends CrudRepository<UserEntry, Integer> {
 
+    @SneakyThrows
     public UserRepository(final ConnectionSource connectionSource,
                           final PasswordEncoder passwordEncoder) {
         super(connectionSource, UserEntry.class);
-        // TODO: cache
+
+        getHandle().setObjectCache(new LruObjectCache(128));
 
         UserEntry rootUser = queryForId(1);
         if (rootUser != null) {
