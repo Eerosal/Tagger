@@ -1,10 +1,10 @@
 import "./App.css";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
-import Home from "./routes/home/home";
-import Search from "./routes/search/search";
-import Upload from "./routes/upload/upload";
-import FileView from "./routes/fileView/fileView";
+import Home from "./routes/Home";
+import Search from "./routes/Search";
+import Upload from "./routes/Upload";
+import FileView from "./routes/FileView";
 import Navbar from "./components/Navbar";
 import PrivateOutlet from "./components/PrivateOutlet";
 

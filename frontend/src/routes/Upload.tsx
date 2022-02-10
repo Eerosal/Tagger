@@ -1,8 +1,8 @@
-import "./upload.css";
+import "./Upload.css";
 import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as React from "react";
-import filesService from "../../services/filesService";
+import filesService from "../services/filesService";
 
 export default function Upload() {
     const [filename, setFilename] = useState("");

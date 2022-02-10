@@ -1,12 +1,12 @@
-import "./fileView.css";
+import "./FileView.css";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import filesService from "../../services/filesService";
+import filesService from "../services/filesService";
 import {
     FileViewState, TaggerFileResponse
-} from "../../common/types";
-import tagsService from "../../services/tagsService";
-import FileContainer from "../../components/FileContainer";
+} from "../common/types";
+import tagsService from "../services/tagsService";
+import FileContainer from "../components/FileContainer";
 
 interface TagContainerProps {
     response: TaggerFileResponse,

@@ -1,4 +1,4 @@
-import FileSearch from "../../components/FileSearch";
+import FileSearch from "../components/FileSearch";
 
 
 export default function Home() {

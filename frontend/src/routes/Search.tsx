@@ -1,7 +1,7 @@
-import "./search.css";
+import "./Search.css";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import FileSearch from "../../components/FileSearch";
+import FileSearch from "../components/FileSearch";
 
 interface SearchState {
     query: string,
