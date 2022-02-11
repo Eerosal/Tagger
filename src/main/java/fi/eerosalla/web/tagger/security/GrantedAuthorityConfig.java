@@ -7,6 +7,7 @@ import org.springframework.security.config.core.GrantedAuthorityDefaults;
 @Configuration
 public class GrantedAuthorityConfig {
 
+    // removes ROLE_ prefix from authorities
     @Bean
     GrantedAuthorityDefaults grantedAuthorityDefaults() {
         return new GrantedAuthorityDefaults("");

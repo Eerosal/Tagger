@@ -3,7 +3,6 @@ package fi.eerosalla.web.tagger.repository.user;
 import com.j256.ormlite.dao.LruObjectCache;
 import com.j256.ormlite.support.ConnectionSource;
 import fi.eerosalla.web.tagger.repository.CrudRepository;
-import fi.eerosalla.web.tagger.security.AccessRole;
 import lombok.SneakyThrows;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -25,7 +24,7 @@ public class UserRepository extends CrudRepository<UserEntry, Integer> {
         }
 
         UserEntry newRootUser = new UserEntry(
-            1, "root", passwordEncoder.encode("1234root"), AccessRole.ADMIN
+            1, "root", passwordEncoder.encode("1234root"), "ADMIN"
         );
 
         create(newRootUser);

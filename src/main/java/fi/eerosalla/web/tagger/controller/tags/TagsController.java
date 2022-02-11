@@ -3,7 +3,6 @@ package fi.eerosalla.web.tagger.controller.tags;
 import fi.eerosalla.web.tagger.model.form.TagNamesForm;
 import fi.eerosalla.web.tagger.repository.tag.TagEntry;
 import fi.eerosalla.web.tagger.repository.tag.TagRepository;
-import fi.eerosalla.web.tagger.security.AccessRole;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -17,7 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RolesAllowed(AccessRole.ADMIN)
+@RolesAllowed("ADMIN")
 @RestController
 public class TagsController {
 
@@ -28,6 +27,8 @@ public class TagsController {
     @PostMapping("/api/tags/get-or-create")
     public Object getOrCreateTags(
         final @RequestBody @Validated TagNamesForm tagNamesForm) {
+
+        // TODO: 0 length tags
 
         final var queryBuilder = tagRepository.getHandle()
             .queryBuilder();

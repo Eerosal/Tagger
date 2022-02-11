@@ -5,7 +5,6 @@ import fi.eerosalla.web.tagger.model.response.AuthorizeResponse;
 import fi.eerosalla.web.tagger.model.response.ErrorResponse;
 import fi.eerosalla.web.tagger.repository.user.UserEntry;
 import fi.eerosalla.web.tagger.repository.user.UserRepository;
-import fi.eerosalla.web.tagger.security.AccessRole;
 import fi.eerosalla.web.tagger.security.JwsAuthenticationToken;
 import fi.eerosalla.web.tagger.security.JwtTokenUtil;
 import org.springframework.http.HttpStatus;
@@ -67,7 +66,7 @@ public class AuthorizeController {
         );
     }
 
-    @RolesAllowed(AccessRole.ADMIN)
+    @RolesAllowed("ADMIN")
     @PostMapping("/renew-token")
     public Object renewToken() {
         JwsAuthenticationToken token =

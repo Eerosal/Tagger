@@ -11,6 +11,7 @@ public class JwsAuthenticationToken extends AbstractAuthenticationToken {
     @Getter
     private final int userId;
 
+    // TODO: include jwt?
     public JwsAuthenticationToken(
         final int userId,
         final Collection<? extends GrantedAuthority> authorities) {

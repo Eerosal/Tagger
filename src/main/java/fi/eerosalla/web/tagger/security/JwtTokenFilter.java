@@ -1,13 +1,10 @@
 package fi.eerosalla.web.tagger.security;
 
-import fi.eerosalla.web.tagger.model.data.Role;
 import fi.eerosalla.web.tagger.repository.user.UserEntry;
 import fi.eerosalla.web.tagger.repository.user.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -18,8 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
@@ -33,17 +28,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                           final UserRepository userRepository) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.userRepository = userRepository;
-    }
-
-    public static List<? extends GrantedAuthority> getAuthoritiesForUser(
-        final UserEntry user
-    ) {
-        return user.getRole() != null
-            && !user.getRole().isEmpty()
-            ? List.of(
-            new Role(user.getRole().toUpperCase())
-        )
-            : new ArrayList<>();
     }
 
     @Override
@@ -96,7 +80,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         JwsAuthenticationToken token =
             new JwsAuthenticationToken(
                 userId,
-                getAuthoritiesForUser(user)
+                RoleAuthority.getAuthoritiesForRole(
+                    user.getRole()
+                )
             );
 
 
@@ -104,11 +90,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             new WebAuthenticationDetailsSource().buildDetails(request)
         );
 
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-
-        securityContext.setAuthentication(token);
-
-        SecurityContextHolder.setContext(securityContext);
+        SecurityContextHolder.getContext()
+                .setAuthentication(token);
 
         chain.doFilter(request, response);
     }

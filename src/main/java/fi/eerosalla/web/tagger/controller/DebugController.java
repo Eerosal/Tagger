@@ -6,14 +6,13 @@ import fi.eerosalla.web.tagger.repository.file.FileEntry;
 import fi.eerosalla.web.tagger.repository.file.FileRepository;
 import fi.eerosalla.web.tagger.repository.tag.TagEntry;
 import fi.eerosalla.web.tagger.repository.tag.TagRepository;
-import fi.eerosalla.web.tagger.security.AccessRole;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
 
 
-@RolesAllowed(AccessRole.ADMIN)
+@RolesAllowed("ADMIN")
 @RestController
 public class DebugController {
 

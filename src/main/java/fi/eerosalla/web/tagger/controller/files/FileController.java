@@ -9,7 +9,6 @@ import fi.eerosalla.web.tagger.repository.file.FileEntry;
 import fi.eerosalla.web.tagger.repository.file.FileRepository;
 import fi.eerosalla.web.tagger.repository.tag.TagEntry;
 import fi.eerosalla.web.tagger.repository.tag.TagRepository;
-import fi.eerosalla.web.tagger.security.AccessRole;
 import fi.eerosalla.web.tagger.util.FileUtil;
 import fi.eerosalla.web.tagger.util.MinioUtil;
 import io.minio.MinioClient;
@@ -35,11 +34,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RolesAllowed(AccessRole.ADMIN)
+@RolesAllowed("ADMIN")
 @RestController
 public class FileController {
 
     //10MB
+    // TODO: config
     private static final long MAX_FILE_SIZE_BYTES = 10L * 1000L * 1000L;
 
     private static final Map<String, String> KNOWN_EXTENSIONS =
@@ -50,6 +50,7 @@ public class FileController {
         KNOWN_EXTENSIONS.put("jpg", "image/jpeg");
         KNOWN_EXTENSIONS.put("gif", "image/gif");
         KNOWN_EXTENSIONS.put("mp4", "video/mp4");
+        // TODO: more formats
     }
 
     private final FileRepository fileRepository;
@@ -94,6 +95,7 @@ public class FileController {
         return getFileResponseWithTags(file);
     }
 
+    // TODO: fix this abomination, also fetch => axios
     @SneakyThrows
     @RequestMapping(
         value = "/api/files",

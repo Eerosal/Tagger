@@ -1,6 +1,6 @@
 import "./App.css";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import React from "react";
 import Home from "./routes/Home";
 import Search from "./routes/Search";
 import Upload from "./routes/Upload";

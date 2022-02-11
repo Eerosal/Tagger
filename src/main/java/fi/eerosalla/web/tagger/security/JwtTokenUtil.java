@@ -28,7 +28,7 @@ public class JwtTokenUtil {
         return null;
     }
 
-    // TODO: expiration
+    // TODO: expiration to config
     public String createToken(final String userIdStr) {
         return Jwts.builder()
             .setSubject(

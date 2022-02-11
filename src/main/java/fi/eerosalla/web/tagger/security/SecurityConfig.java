@@ -1,6 +1,5 @@
 package fi.eerosalla.web.tagger.security;
 
-import fi.eerosalla.web.tagger.repository.user.UserRepository;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,12 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 public class SecurityConfig
     extends WebSecurityConfigurerAdapter {
 
-    private final UserRepository userRepository;
     private final JwtTokenFilter jwtTokenFilter;
 
-    public SecurityConfig(final UserRepository userRepository,
-                          final JwtTokenFilter jwtTokenFilter) {
-        this.userRepository = userRepository;
+    public SecurityConfig(final JwtTokenFilter jwtTokenFilter) {
         this.jwtTokenFilter = jwtTokenFilter;
     }
 
