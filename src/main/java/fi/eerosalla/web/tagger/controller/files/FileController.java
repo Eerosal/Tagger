@@ -10,9 +10,7 @@ import fi.eerosalla.web.tagger.repository.file.FileRepository;
 import fi.eerosalla.web.tagger.repository.tag.TagEntry;
 import fi.eerosalla.web.tagger.repository.tag.TagRepository;
 import fi.eerosalla.web.tagger.util.FileUtil;
-import fi.eerosalla.web.tagger.util.MinioUtil;
 import io.minio.MinioClient;
-import io.minio.UploadObjectArgs;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +44,7 @@ public class FileController {
     private static final Map<String, String> KNOWN_EXTENSIONS =
         new HashMap<>();
 
+    // TODO: enum
     static {
         KNOWN_EXTENSIONS.put("png", "image/png");
         KNOWN_EXTENSIONS.put("jpg", "image/jpeg");
@@ -95,7 +95,7 @@ public class FileController {
         return getFileResponseWithTags(file);
     }
 
-    // TODO: fix this abomination, also fetch => axios
+    // TODO: fetch => axios
     @SneakyThrows
     @RequestMapping(
         value = "/api/files",
@@ -104,26 +104,12 @@ public class FileController {
     )
     public Object uploadFile(
         final @RequestParam(name = "filename") String filename,
-        final @RequestParam(name = "file") MultipartFile multipartFile) {
-
-        if (filename == null || filename.isEmpty()) {
+        final @RequestParam(name = "file") MultipartFile multipartFile
+    ) {
+        if (filename == null || filename.isEmpty()
+            || multipartFile == null || multipartFile.isEmpty()
+            || multipartFile.getOriginalFilename() == null) {
             return new ResponseEntity<>(
-                new ErrorResponse("Missing filename"),
-                HttpStatus.BAD_REQUEST
-            );
-        }
-
-        if (multipartFile == null) {
-            return new ResponseEntity<>(
-                new ErrorResponse("Missing file"),
-                HttpStatus.BAD_REQUEST
-            );
-        }
-
-        if (multipartFile.isEmpty()
-            || multipartFile.getSize() == 0) {
-            return new ResponseEntity<>(
-                new ErrorResponse("File cannot be empty"),
                 HttpStatus.BAD_REQUEST
             );
         }
@@ -132,8 +118,8 @@ public class FileController {
             return new ResponseEntity<>(
                 new ErrorResponse(
                     "File is too large (max "
-                        + MAX_FILE_SIZE_BYTES
-                        + " bytes)"
+                        + (MAX_FILE_SIZE_BYTES / 1000000L)
+                        + " MB)"
                 ),
                 HttpStatus.BAD_REQUEST
             );
@@ -150,73 +136,37 @@ public class FileController {
         }
 
         FileEntry file = new FileEntry();
-        file.setName(
-            filename
-        );
-        file.setExtension(
-            extension
-        );
+        file.setName(filename);
+        file.setExtension(extension);
 
         FileEntry fileWithId = fileRepository.create(file);
 
         String internalFilename = fileWithId.getId() + "." + extension;
-        String thumbnailFilename = fileWithId.getId() + "_thumbnail.jpg";
 
-        // TODO: btw, this overwrites files
-        FileUtil.getTempFile(internalFilename,
-            tempFile -> {
-                try {
-                    multipartFile.transferTo(tempFile);
+        File tempFile = FileUtil.getTempFile();
+        try {
+            multipartFile.transferTo(tempFile);
 
-                    UploadObjectArgs uploadObjectArgs =
-                        MinioUtil.createUploadObjectArgs(
-                            "tg-files",
-                            internalFilename,
-                            tempFile.getCanonicalPath(),
-                            mimetype
-                        );
+            FileUtil.uploadFile(
+                minioClient,
+                tempFile,
+                internalFilename,
+                mimetype
+            );
 
-                    minioClient.uploadObject(uploadObjectArgs);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                // TODO: bork for mp4
-                if (!extension.equals("mp4")) {
-                    FileUtil.getTempFile(thumbnailFilename,
-                        tempFile2 -> {
-                            FileUtil.createThumbnail(
-                                tempFile,
-                                tempFile2,
-                                150,
-                                150
-                            );
-
-                            try {
-                                UploadObjectArgs uploadObjectArgs =
-                                    MinioUtil.createUploadObjectArgs(
-                                        "tg-thumbnails",
-                                        thumbnailFilename,
-                                        tempFile2.getCanonicalPath(),
-                                        "image/jpeg"
-                                    );
-
-                                minioClient.uploadObject(
-                                    uploadObjectArgs
-                                );
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    );
-                }
+            // TODO: more formats support, not future proof
+            if (!mimetype.equals("video/mp4")) {
+                FileUtil.uploadThumbnail(
+                    minioClient,
+                    tempFile,
+                    fileWithId.getId()
+                );
             }
-        );
+        } finally {
+            tempFile.delete();
+        }
 
-
-        return new FileResponse(
-            fileWithId
-        );
+        return getFileResponseWithTags(fileWithId);
     }
 
     @GetMapping("/api/files")

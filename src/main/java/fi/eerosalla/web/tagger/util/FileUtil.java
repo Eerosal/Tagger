@@ -1,41 +1,93 @@
 package fi.eerosalla.web.tagger.util;
 
+import io.minio.MinioClient;
+import io.minio.UploadObjectArgs;
 import lombok.SneakyThrows;
 
 import javax.imageio.ImageIO;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.function.Consumer;
 
 public class FileUtil {
 
+    // used to avoid file name conflicts
+    private static int tempFileCounter = 1;
+
     @SneakyThrows
-    public static void getTempFile(final String filename,
-                                   final Consumer<File> tempFileConsumer) {
+    public static File getTempFile() {
         File tempFileDirectory = new File("/tmp/tagger/");
         if (!tempFileDirectory.exists()) {
             tempFileDirectory.mkdir();
         }
 
-        if (filename == null || filename.isEmpty()) {
-            return;
+        File tempFile = new File(
+            tempFileDirectory, tempFileCounter + ".temp"
+        );
+
+        tempFileCounter += 1;
+        if (tempFileCounter == Integer.MAX_VALUE) {
+            tempFileCounter = 1;
         }
 
-        File tempFile = new File(tempFileDirectory, filename);
         tempFile.deleteOnExit();
 
-        tempFileConsumer.accept(tempFile);
-
-        // TODO: delete
-        System.out.println("DELETE " + tempFile.getCanonicalPath());
+        return tempFile;
     }
 
-    @SneakyThrows
+    public static void uploadThumbnail(final MinioClient minioClient,
+                                       final File originalFile,
+                                       final int fileId) throws Exception {
+        File tempFile = getTempFile();
+        createThumbnail(originalFile, tempFile, 150, 150);
+
+        String thumbnailFilename = fileId + "_thumbnail.jpg";
+        try {
+            upload(
+                minioClient,
+                "tg-thumbnails",
+                tempFile,
+                thumbnailFilename,
+                "image/jpeg"
+            );
+        } finally {
+            tempFile.delete();
+        }
+    }
+
+    public static void uploadFile(final MinioClient minioClient,
+                                  final File file,
+                                  final String filename,
+                                  final String mimetype) throws Exception {
+        upload(
+            minioClient,
+            "tg-files",
+            file,
+            filename,
+            mimetype
+        );
+    }
+
+    private static void upload(final MinioClient minioClient,
+                               final String bucket,
+                               final File file,
+                               final String filename,
+                               final String mimetype) throws Exception {
+        UploadObjectArgs uploadObjectArgs =
+            MinioUtil.createUploadObjectArgs(
+                bucket,
+                filename,
+                file.getCanonicalPath(),
+                mimetype
+            );
+
+        minioClient.uploadObject(uploadObjectArgs);
+    }
+
     public static void createThumbnail(final File srcFile,
                                        final File dstFile,
                                        final int maxWidth,
-                                       final int maxHeight) {
+                                       final int maxHeight) throws Exception {
         Image originalImage =
             ImageIO.read(srcFile);
 
