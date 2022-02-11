@@ -7,8 +7,7 @@ import Paginator from "./Paginator";
 import VideoThumbnail from "../assets/img/video_thumbnail.svg";
 import Spinner from "./Spinner";
 import { JwtTokenContext } from "./Authentication";
-
-const { REACT_APP_MINIO_URL: MINIO_URL } = process.env;
+import PrivateImage from "./PrivateImage";
 
 interface FileSearchThumbnailProps {
     file: TaggerFile;
@@ -23,9 +22,9 @@ function FileSearchThumbnail(props: FileSearchThumbnailProps) {
         case "png":
         case "gif": {
             const thumbnailUrl =
-                `${MINIO_URL}/tg-thumbnails/${file.id}_thumbnail.jpg`;
+                `/static/${file.id}_thumbnail.jpg`;
 
-            child = <img
+            child = <PrivateImage
                 src={thumbnailUrl}
                 alt={
                     file.name

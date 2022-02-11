@@ -28,4 +28,6 @@ public class FileEntry {
     // jpg/png/gif etc.
     @Column
     private String extension;
+
+    // TODO: add utils for filenames
 }

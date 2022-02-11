@@ -9,6 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AuthorizeResponse {
 
+    // JWS token for APIs
     private String token;
 
 }

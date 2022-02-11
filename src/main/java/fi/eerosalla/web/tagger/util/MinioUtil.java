@@ -1,7 +1,13 @@
 package fi.eerosalla.web.tagger.util;
 
+import io.minio.GetObjectArgs;
+import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.UploadObjectArgs;
+import io.minio.http.Method;
 import lombok.SneakyThrows;
+
+import java.util.concurrent.TimeUnit;
+
 
 public class MinioUtil {
 
@@ -23,4 +29,31 @@ public class MinioUtil {
         return uploadBuilder.build();
     }
 
+    public static GetObjectArgs createGetObjectArgs(
+        final String bucket,
+        final String object
+    ) {
+        GetObjectArgs.Builder getBuilder =
+            GetObjectArgs.builder();
+
+        getBuilder.bucket(bucket);
+        getBuilder.object(object);
+
+        return getBuilder.build();
+    }
+
+    public static GetPresignedObjectUrlArgs createGetPresignedObjectUrlArgs(
+        final String bucket,
+        final String object
+    ) {
+        GetPresignedObjectUrlArgs.Builder getBuilder =
+            GetPresignedObjectUrlArgs.builder();
+
+        getBuilder.bucket(bucket);
+        getBuilder.object(object);
+        getBuilder.method(Method.GET);
+        getBuilder.expiry(10, TimeUnit.MINUTES);
+
+        return getBuilder.build();
+    }
 }

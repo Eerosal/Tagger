@@ -45,7 +45,7 @@ public class FileUtil {
         try {
             upload(
                 minioClient,
-                "tg-thumbnails",
+                "tg-files",
                 tempFile,
                 thumbnailFilename,
                 "image/jpeg"

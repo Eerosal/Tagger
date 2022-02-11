@@ -90,7 +90,7 @@ public class FileController {
     }
 
     @GetMapping("/api/files/{fileId}")
-    public Object getFile(
+    public Object getFileDetails(
         final @ModelAttribute FileEntry file) {
         return getFileResponseWithTags(file);
     }

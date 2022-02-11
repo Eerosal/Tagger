@@ -62,7 +62,9 @@ public class AuthorizeController {
         }
 
         return new AuthorizeResponse(
-            jwtTokenUtil.createToken(String.valueOf(user.getId()))
+            jwtTokenUtil.createToken(
+                String.valueOf(user.getId())
+            )
         );
     }
 

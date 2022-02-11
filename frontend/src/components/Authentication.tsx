@@ -32,7 +32,7 @@ export function Authentication(props: AuthenticationProps) {
         { jwtToken, setJwtToken }), [jwtToken]);
 
     const getSession = () => JSON.parse(
-        localStorage.taggerSession
+        localStorage.taggerSession || "{}"
     ) as Session;
 
     const renewToken = async (session: Session) => {

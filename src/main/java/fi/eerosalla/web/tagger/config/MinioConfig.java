@@ -31,7 +31,7 @@ public class MinioConfig {
 
     @JsonIgnore
     private static final String[] BUCKET_NAMES = new String[]{
-        "tg-files", "tg-thumbnails"
+        "tg-files"
     };
 
     @AllArgsConstructor
@@ -93,7 +93,7 @@ public class MinioConfig {
                 "2012-10-17",
                 List.of(
                     new StatementEntry(
-                        "Allow", //TODO:
+                        "Deny",
                         Map.of("AWS", List.of("*")),
                         List.of("s3:GetObject"),
                         List.of("arn:aws:s3:::" + bucketName + "/*")
