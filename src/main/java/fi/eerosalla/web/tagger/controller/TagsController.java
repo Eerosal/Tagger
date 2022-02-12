@@ -28,39 +28,46 @@ public class TagsController {
     public Object getOrCreateTags(
         final @RequestBody @Validated TagNamesForm tagNamesForm) {
 
-        // TODO: 0 length tags
+        HashSet<String> tagNames = tagNamesForm.getTagNames().stream()
+            .filter(tagName -> !tagName.isEmpty())
+            .map(String::toLowerCase)
+            .collect(Collectors.toCollection(HashSet::new));
+
+        if (tagNames.isEmpty()) {
+            return new ArrayList<>();
+        }
 
         final var queryBuilder = tagRepository.getHandle()
             .queryBuilder();
 
         queryBuilder.where()
-            .in("name", tagNamesForm.getTagNames());
+            .in("name", tagNames);
 
-        List<TagEntry> tags = new ArrayList<>(queryBuilder.query());
-        if (tags.size() == tagNamesForm.getTagNames().size()) {
-            return tags;
+        HashSet<String> newTagNames = new HashSet<>(tagNames);
+
+        List<TagEntry> foundTags = queryBuilder.query();
+        for (TagEntry foundTag : foundTags) {
+            newTagNames.remove(foundTag.getName());
         }
 
-        HashSet<String> tagsToCreate =
-            new HashSet<>(tagNamesForm.getTagNames());
-        for (TagEntry foundTag : tags) {
-            tagsToCreate.remove(foundTag.getName());
+        if (newTagNames.isEmpty()) {
+            return foundTags;
         }
 
-        List<TagEntry> newTags = tagsToCreate.stream().map(name -> {
+        List<TagEntry> resultTags = new ArrayList<>();
+
+        for (String newTagName : newTagNames) {
             TagEntry newTag = new TagEntry();
+            newTag.setName(newTagName);
 
-            newTag.setName(name);
-
-            return newTag;
-        }).collect(Collectors.toList());
-        tags.addAll(newTags);
-
-        for (TagEntry newTag : newTags) {
             tagRepository.create(newTag);
+
+            resultTags.add(newTag);
         }
 
-        return tags;
+        resultTags.addAll(foundTags);
+
+        return resultTags;
     }
 
 }
