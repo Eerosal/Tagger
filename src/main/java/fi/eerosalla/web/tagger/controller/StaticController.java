@@ -1,10 +1,12 @@
 package fi.eerosalla.web.tagger.controller;
 
 import fi.eerosalla.web.tagger.config.MinioConfig;
+import fi.eerosalla.web.tagger.model.response.ErrorResponse;
 import fi.eerosalla.web.tagger.util.MinioUtil;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
+import java.util.regex.Pattern;
 
 @RolesAllowed("ADMIN")
 @RestController
@@ -29,6 +32,9 @@ public class StaticController {
         this.minioConfig = minioConfig;
     }
 
+    private static final Pattern FILENAME_PATTERN =
+        Pattern.compile("^[a-z0-9_]+\\.[a-z]{3}$", Pattern.CASE_INSENSITIVE);
+
     @GetMapping("/static/**")
     public ResponseEntity<?> minioMirror(final HttpServletRequest request)
         throws Exception {
@@ -39,7 +45,13 @@ public class StaticController {
             staticIndex + "/static/".length()
         );
 
-        // TODO: validate object name
+        if (objectName.length() > 64
+            || !FILENAME_PATTERN.matcher(objectName).matches()) {
+            return new ResponseEntity<>(
+                new ErrorResponse("Invalid filename"),
+                HttpStatus.BAD_REQUEST
+            );
+        }
 
         // the url isn't visible to users so the lifetime doesn't really matter
         GetPresignedObjectUrlArgs args =
