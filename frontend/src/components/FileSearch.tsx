@@ -9,6 +9,7 @@ import Spinner from "./Spinner";
 import PrivateImage from "./PrivateImage";
 import { PrivateSourceProvider } from "./PrivateSourceProvider";
 import { useJwtToken } from "./AuthenticationProvider";
+import { useSetError } from "./ErrorHandlingProvider";
 
 interface FileSearchThumbnailProps {
     file: TaggerFile;
@@ -72,7 +73,7 @@ interface FileSearchProps {
 function FileSearch(props: FileSearchProps) {
     const { query, page, pageSize, paginator } = props;
     const jwtToken = useJwtToken();
-
+    const setError = useSetError();
 
     const [response, setResponse] =
         useState<TaggerFileQueryResponse>(null);
@@ -93,7 +94,7 @@ function FileSearch(props: FileSearchProps) {
 
                 setResponse(newResponse);
             } catch (e) {
-                alert(e);
+                setError(e);
             }
         })();
     }, [query, page, pageSize]);

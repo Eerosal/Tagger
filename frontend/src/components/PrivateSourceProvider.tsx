@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useJwtToken } from "./AuthenticationProvider";
+import { useSetError } from "./ErrorHandlingProvider";
 
 export const PrivateSourceContext = createContext<string>("");
 
@@ -13,6 +14,7 @@ export function PrivateSourceProvider(
     props: PrivateSourceProviderProps) {
     const { src, children } = props;
     const jwtToken = useJwtToken();
+    const setError = useSetError();
     const [dataUrlSrc, setDataUrlSrc] = useState<string>("");
 
     useEffect(() => {
@@ -21,16 +23,21 @@ export function PrivateSourceProvider(
         }
 
         (async () => {
-            const response = await axios.get(src, {
-                responseType: "blob",
-                headers: { Authorization: `Bearer ${jwtToken}` }
-            });
+            try {
+                const response = await axios.get(src, {
+                    responseType: "blob",
+                    headers: { Authorization: `Bearer ${jwtToken}` }
+                });
 
-            const reader = new window.FileReader();
-            reader.readAsDataURL(response.data);
-            reader.onload = () => {
-                setDataUrlSrc(reader.result.toString());
-            };
+                const reader = new window.FileReader();
+                reader.readAsDataURL(response.data);
+                reader.onload = () => {
+                    setDataUrlSrc(reader.result.toString());
+                };
+            } catch (e){
+                setError(e);
+            }
+
         })();
     }, [jwtToken, src]);
 

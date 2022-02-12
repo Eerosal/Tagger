@@ -2,9 +2,11 @@ import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 import { useSetAuthResponse } from "../components/AuthenticationProvider";
+import { useSetError } from "../components/ErrorHandlingProvider";
 
 export default function Login() {
     const setAuthResponse = useSetAuthResponse();
+    const setError = useSetError();
 
     const navigate = useNavigate();
 
@@ -24,12 +26,7 @@ export default function Login() {
                 navigate("/");
             }
         } catch (e) {
-            if (e.response
-                && e.response.data.error) {
-                alert(e.response.data.error);
-            } else {
-                alert(e);
-            }
+            setError(e);
 
             setAuthResponse(null);
         }

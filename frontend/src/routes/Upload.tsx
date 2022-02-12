@@ -4,19 +4,21 @@ import { useNavigate } from "react-router-dom";
 import * as React from "react";
 import filesService from "../services/filesService";
 import { useJwtToken } from "../components/AuthenticationProvider";
+import { useSetError } from "../components/ErrorHandlingProvider";
 
 export default function Upload() {
     const [filename, setFilename] = useState("");
     const fileInput = React.createRef<HTMLInputElement>();
     const navigate = useNavigate();
     const jwtToken = useJwtToken();
+    const setError = useSetError();
 
     const onUploadFormSubmit = async (
         event: React.SyntheticEvent) => {
         event.preventDefault();
 
         if(!fileInput.current || fileInput.current.files.length === 0) {
-            alert("No file specified");
+            setError("No file specified");
 
             return;
         }
@@ -35,7 +37,7 @@ export default function Upload() {
                 file: fileInput.current.files[0]
             });
         } catch (e) {
-            alert(e);
+            setError(e);
 
             return;
         }

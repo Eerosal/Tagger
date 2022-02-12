@@ -112,6 +112,7 @@ public class FileController {
         final @RequestParam(name = "file") MultipartFile multipartFile
     ) {
         if (filename == null || filename.isEmpty()
+            || filename.length() > 255
             || multipartFile == null || multipartFile.isEmpty()
             || multipartFile.getOriginalFilename() == null) {
             return new ResponseEntity<>(

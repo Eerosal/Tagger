@@ -32,3 +32,8 @@ export interface TaggerAuthorizationResponse {
     token: string,
     lifetimeSeconds: number
 }
+
+
+export interface TaggerErrorResponse {
+    error: string
+}

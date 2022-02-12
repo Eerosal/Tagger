@@ -9,12 +9,11 @@ const query = async (token: string, queryStr: string):
         }
     );
 
-    const response = await fetch(`/api/files?${searchParams}`, {
-        headers: { "Authorization": `Bearer ${token}` },
-    });
-    const json = await response.json();
+    const response = await axios.get(`/api/files?${searchParams}`, {
+        headers: { Authorization: `Bearer ${token}`}
+    })
 
-    return json as TaggerFileQueryResponse;
+    return response.data;
 };
 
 interface UploadForm {
@@ -28,13 +27,18 @@ const upload = async (token: string, uploadForm: UploadForm):
     formData.append("filename", uploadForm.filename);
     formData.append("file", uploadForm.file);
 
-    const response = await fetch("/api/files", {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${token}` },
-        body: formData
-    });
+    const response = await axios.post(
+        "/api/files",
+        formData,
+        {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`
+            },
+        }
+    );
 
-    return response.json();
+    return response.data;
 };
 
 const get = async (token: string, id: number):

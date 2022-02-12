@@ -8,6 +8,7 @@ import {
 import tagsService from "../services/tagsService";
 import FileContainer from "../components/FileContainer";
 import { useJwtToken } from "../components/AuthenticationProvider";
+import { useSetError } from "../components/ErrorHandlingProvider";
 
 interface TagContainerProps {
     response: TaggerFileResponse,
@@ -17,14 +18,19 @@ interface TagContainerProps {
 function TagContainer(props: TagContainerProps) {
     const { response, setResponse } = props;
     const jwtToken = useJwtToken();
+    const setError = useSetError();
 
     const removeTag = async (tagId: number) => {
-        const newResponse =
-            await filesService.removeTags(
-                jwtToken, response.file.id, [tagId]
-            );
+        try {
+            const newResponse =
+                await filesService.removeTags(
+                    jwtToken, response.file.id, [tagId]
+                );
 
-        setResponse(newResponse);
+            setResponse(newResponse);
+        } catch (e) {
+            setError(e);
+        }
     };
 
     const addTags = async () => {
@@ -36,14 +42,18 @@ function TagContainer(props: TagContainerProps) {
             newTagNames
         );
 
-        const newResponse =
-            await filesService.addTags(
-                jwtToken,
-                response.file.id,
-                newTagIds.map(tag => tag.id)
-            );
+        try {
+            const newResponse =
+                await filesService.addTags(
+                    jwtToken,
+                    response.file.id,
+                    newTagIds.map(tag => tag.id)
+                );
 
-        setResponse(newResponse);
+            setResponse(newResponse);
+        } catch (e){
+            setError(e);
+        }
     };
 
     return (
@@ -90,6 +100,7 @@ export default function FileView() {
     const { state } = useLocation();
     const { uploadedFileResponse } = (state || {}) as FileViewState;
     const jwtToken = useJwtToken();
+    const setError = useSetError();
 
     useEffect(() => {
         const fileId = parseInt(fileIdParam, 10);
@@ -110,7 +121,7 @@ export default function FileView() {
                         && e.response.status === 404) {
                         navigate("/404");
                     } else {
-                        alert(e);
+                        setError(e);
                     }
                 }
             }
