@@ -13,8 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 public class TagNamesForm {
 
-    //TODO: validate names
-
     @NotNull
     @Size(min = 1, max = 128)
     private List<String> tagNames;

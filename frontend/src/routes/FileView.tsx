@@ -15,6 +15,8 @@ interface TagContainerProps {
     setResponse: React.Dispatch<React.SetStateAction<TaggerFileResponse>>
 }
 
+const TAG_NAME_PATTERN = /^[a-z_]+$/i;
+
 function TagContainer(props: TagContainerProps) {
     const { response, setResponse } = props;
     const jwtToken = useJwtToken();
@@ -37,6 +39,26 @@ function TagContainer(props: TagContainerProps) {
         const tagInput = prompt("Enter new tags separated by spaces");
 
         const newTagNames = tagInput.split(" ");
+        const newTagNamesFiltered = newTagNames.filter(
+            (tagName) => tagName.match(TAG_NAME_PATTERN)
+        ).map((tagName) => tagName.toLocaleLowerCase());
+
+        if (newTagNames.length !== newTagNamesFiltered.length) {
+            if (newTagNamesFiltered.length === 0) {
+                setError(
+                    "Invalid list of tag names. "
+                    + "Tag names can only contain letters a-z and underscores."
+                );
+
+                return;
+            }
+
+            setError(
+                "Some tag names were omitted. "
+                + "Tag names can only contain letters a-z and underscores."
+            );
+        }
+
         const newTagIds = await tagsService.getByNamesOrCreate(
             jwtToken,
             newTagNames
@@ -51,11 +73,12 @@ function TagContainer(props: TagContainerProps) {
                 );
 
             setResponse(newResponse);
-        } catch (e){
+        } catch (e) {
             setError(e);
         }
     };
 
+    // TODO: fix link jump
     return (
         <main>
             <ul className="tag-container">

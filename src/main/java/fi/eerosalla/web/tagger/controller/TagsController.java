@@ -4,7 +4,6 @@ import fi.eerosalla.web.tagger.model.form.TagNamesForm;
 import fi.eerosalla.web.tagger.repository.tag.TagEntry;
 import fi.eerosalla.web.tagger.repository.tag.TagRepository;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,14 +13,21 @@ import javax.annotation.security.RolesAllowed;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RolesAllowed("ADMIN")
 @RestController
 public class TagsController {
 
-    @Autowired
-    private TagRepository tagRepository;
+    private static final Pattern TAG_NAME_PATTERN =
+        Pattern.compile("^[a-z_]+$");
+
+    private final TagRepository tagRepository;
+
+    public TagsController(final TagRepository tagRepository) {
+        this.tagRepository = tagRepository;
+    }
 
     @SneakyThrows
     @PostMapping("/api/tags/get-or-create")
@@ -31,6 +37,7 @@ public class TagsController {
         HashSet<String> tagNames = tagNamesForm.getTagNames().stream()
             .filter(tagName -> !tagName.isEmpty())
             .map(String::toLowerCase)
+            .filter(tagName -> TAG_NAME_PATTERN.matcher(tagName).matches())
             .collect(Collectors.toCollection(HashSet::new));
 
         if (tagNames.isEmpty()) {
