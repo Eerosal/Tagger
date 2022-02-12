@@ -1,5 +1,7 @@
-package fi.eerosalla.web.tagger.controller.files;
+package fi.eerosalla.web.tagger.controller;
 
+import fi.eerosalla.web.tagger.config.FileConfig;
+import fi.eerosalla.web.tagger.config.MinioConfig;
 import fi.eerosalla.web.tagger.model.form.TagIdsForm;
 import fi.eerosalla.web.tagger.model.response.ErrorResponse;
 import fi.eerosalla.web.tagger.model.response.FileQueryResponse;
@@ -37,9 +39,6 @@ import java.util.Map;
 @RestController
 public class FileController {
 
-    //10MB
-    // TODO: config
-    private static final long MAX_FILE_SIZE_BYTES = 10L * 1000L * 1000L;
 
     private static final Map<String, String> KNOWN_EXTENSIONS =
         new HashMap<>();
@@ -60,15 +59,21 @@ public class FileController {
     private final TagRepository tagRepository;
 
     private final MinioClient minioClient;
+    private final MinioConfig minioConfig;
+    private final FileConfig fileConfig;
 
     public FileController(final FileRepository fileRepository,
                           final ConnectionRepository connectionRepository,
                           final TagRepository tagRepository,
-                          final MinioClient minioClient) {
+                          final MinioClient minioClient,
+                          final MinioConfig minioConfig,
+                          final FileConfig fileConfig) {
         this.fileRepository = fileRepository;
         this.connectionRepository = connectionRepository;
         this.tagRepository = tagRepository;
         this.minioClient = minioClient;
+        this.minioConfig = minioConfig;
+        this.fileConfig = fileConfig;
     }
 
     @SneakyThrows
@@ -114,11 +119,11 @@ public class FileController {
             );
         }
 
-        if (multipartFile.getSize() > MAX_FILE_SIZE_BYTES) {
+        if (multipartFile.getSize() > fileConfig.getMaxFileSize().toBytes()) {
             return new ResponseEntity<>(
                 new ErrorResponse(
                     "File is too large (max "
-                        + (MAX_FILE_SIZE_BYTES / 1000000L)
+                        + fileConfig.getMaxFileSize().toMegabytes()
                         + " MB)"
                 ),
                 HttpStatus.BAD_REQUEST
@@ -147,8 +152,9 @@ public class FileController {
         try {
             multipartFile.transferTo(tempFile);
 
-            FileUtil.uploadFile(
+            FileUtil.upload(
                 minioClient,
+                minioConfig.getBucket(),
                 tempFile,
                 internalFilename,
                 mimetype
@@ -158,6 +164,7 @@ public class FileController {
             if (!mimetype.equals("video/mp4")) {
                 FileUtil.uploadThumbnail(
                     minioClient,
+                    minioConfig.getBucket(),
                     tempFile,
                     fileWithId.getId()
                 );

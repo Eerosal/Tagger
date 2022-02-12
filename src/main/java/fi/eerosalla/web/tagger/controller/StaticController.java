@@ -1,5 +1,6 @@
 package fi.eerosalla.web.tagger.controller;
 
+import fi.eerosalla.web.tagger.config.MinioConfig;
 import fi.eerosalla.web.tagger.util.MinioUtil;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
@@ -20,9 +21,12 @@ public class StaticController {
     private final MinioClient minioClient;
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final MinioConfig minioConfig;
 
-    public StaticController(final MinioClient minioClient) {
+    public StaticController(final MinioClient minioClient,
+                            final MinioConfig minioConfig) {
         this.minioClient = minioClient;
+        this.minioConfig = minioConfig;
     }
 
     @GetMapping("/static/**")
@@ -37,8 +41,11 @@ public class StaticController {
 
         // TODO: validate object name
 
+        // the url isn't visible to users so the lifetime doesn't really matter
         GetPresignedObjectUrlArgs args =
-            MinioUtil.createGetPresignedObjectUrlArgs("tg-files", objectName);
+            MinioUtil.createGetPresignedObjectUrlArgs(
+                minioConfig.getBucket(), objectName, 120
+            );
         String presignedUrl = minioClient.getPresignedObjectUrl(args);
 
         URI uri = new URI(presignedUrl);

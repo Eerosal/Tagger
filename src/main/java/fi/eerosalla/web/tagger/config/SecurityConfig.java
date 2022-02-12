@@ -1,5 +1,8 @@
-package fi.eerosalla.web.tagger.security;
+package fi.eerosalla.web.tagger.config;
 
+import fi.eerosalla.web.tagger.security.JwtTokenFilter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,18 +16,29 @@ import javax.servlet.http.HttpServletResponse;
 //https://www.toptal.com/spring/spring-security-tutorial
 
 @Configuration
+@ConfigurationProperties(prefix = "tagger.security")
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(jsr250Enabled = true)
 public class SecurityConfig
     extends WebSecurityConfigurerAdapter {
+
+    @Setter
+    private Integer tokenLifetimeSeconds;
+
+    public int getTokenLifetimeSeconds() {
+        // default value 120 seconds / 2 minutes
+        if (tokenLifetimeSeconds == null) {
+            return 120;
+        }
+
+        return tokenLifetimeSeconds;
+    }
 
     private final JwtTokenFilter jwtTokenFilter;
 
     public SecurityConfig(final JwtTokenFilter jwtTokenFilter) {
         this.jwtTokenFilter = jwtTokenFilter;
     }
-
-    // TODO: file authentication
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
@@ -48,7 +62,7 @@ public class SecurityConfig
 
             .authorizeRequests()
             .antMatchers("/authorize").permitAll()
-                .anyRequest().authenticated();
+            .anyRequest().authenticated();
 
         http.addFilterBefore(
             jwtTokenFilter,

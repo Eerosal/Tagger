@@ -12,4 +12,7 @@ public class AuthorizeResponse {
     // JWS token for APIs
     private String token;
 
+    // JWS token lifetime in seconds
+    private int lifetimeSeconds;
+
 }

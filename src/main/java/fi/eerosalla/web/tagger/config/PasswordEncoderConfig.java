@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "password-encoder")
+@ConfigurationProperties(prefix = "tagger.password-encoder")
 public class PasswordEncoderConfig {
 
     @JsonIgnore

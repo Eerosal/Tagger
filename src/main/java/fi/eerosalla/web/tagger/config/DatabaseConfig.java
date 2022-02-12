@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "db")
+@ConfigurationProperties(prefix = "tagger.db")
 public class DatabaseConfig {
 
     private String jdbcStr;

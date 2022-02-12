@@ -6,13 +6,13 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
-public class JwsAuthenticationToken extends AbstractAuthenticationToken {
+public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     @Getter
     private final int userId;
 
     // TODO: include jwt?
-    public JwsAuthenticationToken(
+    public JwtAuthenticationToken(
         final int userId,
         final Collection<? extends GrantedAuthority> authorities) {
         super(authorities);

@@ -44,7 +44,8 @@ public class MinioUtil {
 
     public static GetPresignedObjectUrlArgs createGetPresignedObjectUrlArgs(
         final String bucket,
-        final String object
+        final String object,
+        final int tokenLifetimeSeconds
     ) {
         GetPresignedObjectUrlArgs.Builder getBuilder =
             GetPresignedObjectUrlArgs.builder();
@@ -52,7 +53,7 @@ public class MinioUtil {
         getBuilder.bucket(bucket);
         getBuilder.object(object);
         getBuilder.method(Method.GET);
-        getBuilder.expiry(10, TimeUnit.MINUTES);
+        getBuilder.expiry(tokenLifetimeSeconds, TimeUnit.SECONDS);
 
         return getBuilder.build();
     }

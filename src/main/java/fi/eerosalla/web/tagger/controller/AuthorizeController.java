@@ -1,11 +1,12 @@
-package fi.eerosalla.web.tagger.controller.authorize;
+package fi.eerosalla.web.tagger.controller;
 
+import fi.eerosalla.web.tagger.config.SecurityConfig;
 import fi.eerosalla.web.tagger.model.form.AuthorizeForm;
 import fi.eerosalla.web.tagger.model.response.AuthorizeResponse;
 import fi.eerosalla.web.tagger.model.response.ErrorResponse;
 import fi.eerosalla.web.tagger.repository.user.UserEntry;
 import fi.eerosalla.web.tagger.repository.user.UserRepository;
-import fi.eerosalla.web.tagger.security.JwsAuthenticationToken;
+import fi.eerosalla.web.tagger.security.JwtAuthenticationToken;
 import fi.eerosalla.web.tagger.security.JwtTokenUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +25,29 @@ public class AuthorizeController {
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final SecurityConfig securityConfig;
 
     public AuthorizeController(final JwtTokenUtil jwtTokenUtil,
                                final UserRepository userRepository,
-                               final PasswordEncoder passwordEncoder) {
+                               final PasswordEncoder passwordEncoder,
+                               final SecurityConfig securityConfig) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.securityConfig = securityConfig;
+    }
+
+    private AuthorizeResponse createAuthorizeResponse(final int userId) {
+        int tokenLifetimeSeconds =
+            securityConfig.getTokenLifetimeSeconds();
+
+        return new AuthorizeResponse(
+            jwtTokenUtil.createToken(
+                String.valueOf(userId),
+                tokenLifetimeSeconds
+            ),
+            tokenLifetimeSeconds
+        );
     }
 
     @PostMapping("/authorize")
@@ -61,25 +78,17 @@ public class AuthorizeController {
             );
         }
 
-        return new AuthorizeResponse(
-            jwtTokenUtil.createToken(
-                String.valueOf(user.getId())
-            )
-        );
+        return createAuthorizeResponse(user.getId());
     }
 
     @RolesAllowed("ADMIN")
     @PostMapping("/renew-token")
     public Object renewToken() {
-        JwsAuthenticationToken token =
-            (JwsAuthenticationToken) SecurityContextHolder
+        JwtAuthenticationToken token =
+            (JwtAuthenticationToken) SecurityContextHolder
                 .getContext().getAuthentication();
 
-        return new AuthorizeResponse(
-            jwtTokenUtil.createToken(
-                String.valueOf(token.getUserId())
-            )
-        );
+        return createAuthorizeResponse(token.getUserId());
     }
 
 }

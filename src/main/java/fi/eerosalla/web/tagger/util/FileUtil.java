@@ -36,6 +36,7 @@ public class FileUtil {
     }
 
     public static void uploadThumbnail(final MinioClient minioClient,
+                                       final String bucket,
                                        final File originalFile,
                                        final int fileId) throws Exception {
         File tempFile = getTempFile();
@@ -45,7 +46,7 @@ public class FileUtil {
         try {
             upload(
                 minioClient,
-                "tg-files",
+                bucket,
                 tempFile,
                 thumbnailFilename,
                 "image/jpeg"
@@ -55,24 +56,11 @@ public class FileUtil {
         }
     }
 
-    public static void uploadFile(final MinioClient minioClient,
-                                  final File file,
-                                  final String filename,
-                                  final String mimetype) throws Exception {
-        upload(
-            minioClient,
-            "tg-files",
-            file,
-            filename,
-            mimetype
-        );
-    }
-
-    private static void upload(final MinioClient minioClient,
-                               final String bucket,
-                               final File file,
-                               final String filename,
-                               final String mimetype) throws Exception {
+    public static void upload(final MinioClient minioClient,
+                              final String bucket,
+                              final File file,
+                              final String filename,
+                              final String mimetype) throws Exception {
         UploadObjectArgs uploadObjectArgs =
             MinioUtil.createUploadObjectArgs(
                 bucket,

@@ -1,4 +1,4 @@
-package fi.eerosalla.web.tagger.controller.files;
+package fi.eerosalla.web.tagger.controller;
 
 import fi.eerosalla.web.tagger.model.response.ErrorResponse;
 import fi.eerosalla.web.tagger.repository.file.FileEntry;

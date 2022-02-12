@@ -4,6 +4,7 @@ import fi.eerosalla.web.tagger.repository.user.UserEntry;
 import fi.eerosalla.web.tagger.repository.user.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -32,8 +33,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(final HttpServletRequest request,
-                                    final HttpServletResponse response,
-                                    final FilterChain chain)
+                                    @NotNull final HttpServletResponse response,
+                                    @NotNull final FilterChain chain)
         throws ServletException, IOException {
 
         String authorizationHeader =
@@ -77,8 +78,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        JwsAuthenticationToken token =
-            new JwsAuthenticationToken(
+        JwtAuthenticationToken token =
+            new JwtAuthenticationToken(
                 userId,
                 RoleAuthority.getAuthoritiesForRole(
                     user.getRole()

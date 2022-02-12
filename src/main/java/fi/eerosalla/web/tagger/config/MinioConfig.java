@@ -22,17 +22,13 @@ import java.util.Map;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "minio")
+@ConfigurationProperties(prefix = "tagger.minio")
 public class MinioConfig {
 
     private String endpoint;
     private String accessKey;
     private String secretKey;
-
-    @JsonIgnore
-    private static final String[] BUCKET_NAMES = new String[]{
-        "tg-files"
-    };
+    private String bucket;
 
     @AllArgsConstructor
     private static class StatementEntry {
@@ -65,52 +61,50 @@ public class MinioConfig {
     @SneakyThrows
     public MinioClient minioClient(final ObjectMapper objectMapper) {
         MinioClient client = MinioClient.builder()
-            .endpoint(endpoint)
+            .endpoint(this.getEndpoint())
             .credentials(
-                accessKey,
-                secretKey
+                this.getAccessKey(),
+                this.getSecretKey()
             ).build();
 
-        for (String bucketName : BUCKET_NAMES) {
-            BucketExistsArgs bucketExistsArgs =
-                BucketExistsArgs.builder()
+        String bucketName = this.getBucket();
+
+        BucketExistsArgs bucketExistsArgs =
+            BucketExistsArgs.builder()
+                .bucket(bucketName)
+                .build();
+
+        boolean bucketExists =
+            client.bucketExists(bucketExistsArgs);
+        if (!bucketExists) {
+            MakeBucketArgs makeBucketArgs =
+                MakeBucketArgs.builder()
                     .bucket(bucketName)
                     .build();
-
-            boolean bucketExists =
-                client.bucketExists(bucketExistsArgs);
-            if (!bucketExists) {
-                MakeBucketArgs makeBucketArgs =
-                    MakeBucketArgs.builder()
-                        .bucket(bucketName)
-                        .build();
-                client.makeBucket(makeBucketArgs);
-            }
-
-
-
-            BucketPolicy bucketPolicy = new BucketPolicy(
-                "2012-10-17",
-                List.of(
-                    new StatementEntry(
-                        "Deny",
-                        Map.of("AWS", List.of("*")),
-                        List.of("s3:GetObject"),
-                        List.of("arn:aws:s3:::" + bucketName + "/*")
-                    )
-                )
-            );
-
-            SetBucketPolicyArgs setBucketPolicyArgs =
-                SetBucketPolicyArgs.builder()
-                    .bucket(bucketName)
-                    .config(
-                        objectMapper.writeValueAsString(
-                            bucketPolicy
-                        )
-                    ).build();
-            client.setBucketPolicy(setBucketPolicyArgs);
+            client.makeBucket(makeBucketArgs);
         }
+
+        BucketPolicy bucketPolicy = new BucketPolicy(
+            "2012-10-17",
+            List.of(
+                new StatementEntry(
+                    "Deny",
+                    Map.of("AWS", List.of("*")),
+                    List.of("s3:GetObject"),
+                    List.of("arn:aws:s3:::" + bucketName + "/*")
+                )
+            )
+        );
+
+        SetBucketPolicyArgs setBucketPolicyArgs =
+            SetBucketPolicyArgs.builder()
+                .bucket(bucketName)
+                .config(
+                    objectMapper.writeValueAsString(
+                        bucketPolicy
+                    )
+                ).build();
+        client.setBucketPolicy(setBucketPolicyArgs);
 
         return client;
     }

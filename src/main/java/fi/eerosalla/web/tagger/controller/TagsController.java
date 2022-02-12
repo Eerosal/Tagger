@@ -1,4 +1,4 @@
-package fi.eerosalla.web.tagger.controller.tags;
+package fi.eerosalla.web.tagger.controller;
 
 import fi.eerosalla.web.tagger.model.form.TagNamesForm;
 import fi.eerosalla.web.tagger.repository.tag.TagEntry;

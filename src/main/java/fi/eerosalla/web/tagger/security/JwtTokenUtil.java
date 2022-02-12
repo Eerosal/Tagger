@@ -28,15 +28,16 @@ public class JwtTokenUtil {
         return null;
     }
 
-    // TODO: expiration to config
-    public String createToken(final String userIdStr) {
+    public String createToken(final String userIdStr,
+                              final int tokenLifetimeSeconds) {
         return Jwts.builder()
             .setSubject(
                 userIdStr
             )
             .setExpiration(
                 new Date(
-                    System.currentTimeMillis() + 60L * 2L * 1000L
+                    System.currentTimeMillis()
+                        + tokenLifetimeSeconds * 1000L
                 )
             )
             .signWith(KEY)
