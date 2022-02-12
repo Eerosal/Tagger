@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { AuthenticationContext } from "./AuthenticationProvider";
+import { useJwtToken } from "./AuthenticationProvider";
 
 export const PrivateSourceContext = createContext<string>("");
 
@@ -12,7 +12,7 @@ interface PrivateSourceProviderProps {
 export function PrivateSourceProvider(
     props: PrivateSourceProviderProps) {
     const { src, children } = props;
-    const { jwtToken } = useContext(AuthenticationContext);
+    const jwtToken = useJwtToken();
     const [dataUrlSrc, setDataUrlSrc] = useState<string>("");
 
     useEffect(() => {

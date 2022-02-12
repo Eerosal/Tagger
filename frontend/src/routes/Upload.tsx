@@ -1,15 +1,15 @@
 import "./Upload.css";
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as React from "react";
 import filesService from "../services/filesService";
-import { AuthenticationContext } from "../components/AuthenticationProvider";
+import { useJwtToken } from "../components/AuthenticationProvider";
 
 export default function Upload() {
     const [filename, setFilename] = useState("");
     const fileInput = React.createRef<HTMLInputElement>();
     const navigate = useNavigate();
-    const { jwtToken } = useContext(AuthenticationContext);
+    const jwtToken = useJwtToken();
 
     const onUploadFormSubmit = async (
         event: React.SyntheticEvent) => {

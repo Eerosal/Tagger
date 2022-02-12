@@ -1,13 +1,13 @@
 import "./FileView.css";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import filesService from "../services/filesService";
 import {
     FileViewState, TaggerFileResponse
 } from "../common/types";
 import tagsService from "../services/tagsService";
 import FileContainer from "../components/FileContainer";
-import { AuthenticationContext } from "../components/AuthenticationProvider";
+import { useJwtToken } from "../components/AuthenticationProvider";
 
 interface TagContainerProps {
     response: TaggerFileResponse,
@@ -16,7 +16,7 @@ interface TagContainerProps {
 
 function TagContainer(props: TagContainerProps) {
     const { response, setResponse } = props;
-    const { jwtToken } = useContext(AuthenticationContext);
+    const jwtToken = useJwtToken();
 
     const removeTag = async (tagId: number) => {
         const newResponse =
@@ -89,7 +89,7 @@ export default function FileView() {
         useState<TaggerFileResponse>(null);
     const { state } = useLocation();
     const { uploadedFileResponse } = (state || {}) as FileViewState;
-    const { jwtToken } = useContext(AuthenticationContext);
+    const jwtToken = useJwtToken();
 
     useEffect(() => {
         const fileId = parseInt(fileIdParam, 10);

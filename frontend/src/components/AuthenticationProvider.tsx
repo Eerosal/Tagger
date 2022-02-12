@@ -1,17 +1,31 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import Spinner from "./Spinner";
 import { Session, TaggerAuthorizationResponse } from "../common/types";
 import authService from "../services/authService";
 
 let JWT_TOKEN_TTL: number = null;
 
+type AuthResponseConsumer = (auth: TaggerAuthorizationResponse) => void;
+
 interface AuthenticationContextState {
     jwtToken: string,
-    setAuthResponse: (auth: TaggerAuthorizationResponse) => void
+    setAuthResponse: AuthResponseConsumer
 }
 
-export const AuthenticationContext =
+const AuthenticationContext =
     React.createContext<AuthenticationContextState>(null);
+
+export const useJwtToken = (): string => {
+    const { jwtToken } = useContext(AuthenticationContext);
+
+    return jwtToken;
+}
+
+export const useSetAuthResponse = (): AuthResponseConsumer => {
+    const { setAuthResponse } = useContext(AuthenticationContext);
+
+    return setAuthResponse;
+}
 
 interface AuthenticationProps {
     children: JSX.Element | JSX.Element[];
