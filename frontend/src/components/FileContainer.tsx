@@ -2,6 +2,7 @@ import "./FileContainer.css";
 import { TaggerFile } from "../common/types";
 import PrivateImage from "./PrivateImage";
 import PrivateVideo from "./PrivateVideo";
+import { PrivateSourceProvider } from "./PrivateSourceProvider";
 
 interface FileContainerProps {
     file: TaggerFile;
@@ -18,25 +19,29 @@ export default function FileContainer(props: FileContainerProps) {
 
     const fileUrl = `/static/${internalFilename}`;
 
+    let child = null;
     switch (file.extension) {
         case "png":
         case "jpg":
         case "gif":
-            return (
-                <PrivateImage
-                    src={fileUrl}
-                    className="file imageFile"
-                    alt={file.name}
-                />
-            );
+            child = <PrivateImage
+                className="file imageFile"
+                alt={file.name}
+            />
+            break;
         case "mp4":
-            return (
-                <PrivateVideo
-                    src={fileUrl}
-                    className="file videoFile"
-                />
-            );
+            child = <PrivateVideo
+                className="file videoFile"
+            />;
     }
 
-    return null;
+    if(child == null){
+        return null;
+    }
+
+    return (
+        <PrivateSourceProvider src={fileUrl}>
+            {child}
+        </PrivateSourceProvider>
+    )
 }

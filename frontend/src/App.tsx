@@ -8,12 +8,12 @@ import FileView from "./routes/FileView";
 import Navbar from "./components/Navbar";
 import PrivateOutlet from "./components/PrivateOutlet";
 import Login from "./routes/Login";
-import { Authentication } from "./components/Authentication";
+import { AuthenticationProvider } from "./components/AuthenticationProvider";
 
 function App() {
     return (
         <div className="app">
-            <Authentication>
+            <AuthenticationProvider>
                 <Navbar />
                 <Routes>
                     <Route path="/login" element={
@@ -43,7 +43,7 @@ function App() {
                         }
                     />
                 </Routes>
-            </Authentication>
+            </AuthenticationProvider>
         </div>
     );
 }

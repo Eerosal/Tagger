@@ -6,8 +6,9 @@ import filesService from "../services/filesService";
 import Paginator from "./Paginator";
 import VideoThumbnail from "../assets/img/video_thumbnail.svg";
 import Spinner from "./Spinner";
-import { JwtTokenContext } from "./Authentication";
+import { JwtTokenContext } from "./AuthenticationProvider";
 import PrivateImage from "./PrivateImage";
+import { PrivateSourceProvider } from "./PrivateSourceProvider";
 
 interface FileSearchThumbnailProps {
     file: TaggerFile;
@@ -24,12 +25,15 @@ function FileSearchThumbnail(props: FileSearchThumbnailProps) {
             const thumbnailUrl =
                 `/static/${file.id}_thumbnail.jpg`;
 
-            child = <PrivateImage
+            child = <PrivateSourceProvider
                 src={thumbnailUrl}
-                alt={
-                    file.name
-                }
-            />;
+            >
+                <PrivateImage
+                    alt={
+                        file.name
+                    }
+                />
+            </PrivateSourceProvider>;
             break;
         }
         case "mp4":

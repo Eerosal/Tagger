@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 import { JwtTokenContext }
-    from "../components/Authentication";
+    from "../components/AuthenticationProvider";
 
 export default function Login() {
     const { setJwtToken } = useContext(JwtTokenContext);

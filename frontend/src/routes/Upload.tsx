@@ -3,7 +3,7 @@ import { ChangeEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as React from "react";
 import filesService from "../services/filesService";
-import { JwtTokenContext } from "../components/Authentication";
+import { JwtTokenContext } from "../components/AuthenticationProvider";
 
 export default function Upload() {
     const [filename, setFilename] = useState("");

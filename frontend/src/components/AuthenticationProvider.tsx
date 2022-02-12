@@ -21,7 +21,7 @@ interface AuthenticationProps {
     children: JSX.Element | JSX.Element[];
 }
 
-export function Authentication(props: AuthenticationProps) {
+export function AuthenticationProvider(props: AuthenticationProps) {
     const { children } = props;
 
     const [ready, setReady] = useState<boolean>(false);

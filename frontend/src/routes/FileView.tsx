@@ -7,7 +7,7 @@ import {
 } from "../common/types";
 import tagsService from "../services/tagsService";
 import FileContainer from "../components/FileContainer";
-import { JwtTokenContext } from "../components/Authentication";
+import { JwtTokenContext } from "../components/AuthenticationProvider";
 
 interface TagContainerProps {
     response: TaggerFileResponse,
