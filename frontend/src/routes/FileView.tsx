@@ -47,35 +47,37 @@ function TagContainer(props: TagContainerProps) {
     };
 
     return (
-        <ul className="tag-container">
-            {
-                response.tags.map((tag) => (
-                    <li key={tag.id}
-                        className="tag-container__tag-entry">
-                        <a
-                            href="#"
-                            onClick={() => removeTag(tag.id)}
-                        >
-                            -
-                        </a>
-                        &nbsp;
-                        <Link
-                            to={`/search?query=${tag.name}`}
-                        >
-                            {tag.name}
-                        </Link>
-                    </li>
-                ))
-            }
-            <li className="tag-container__tag-entry">
-                <a
-                    href="#"
-                    onClick={addTags}
-                >
-                    + add tags
-                </a>
-            </li>
-        </ul>
+        <main>
+            <ul className="tag-container">
+                {
+                    response.tags.map((tag) => (
+                        <li key={tag.id}
+                            className="tag-container__tag-entry">
+                            <a
+                                href="#"
+                                onClick={() => removeTag(tag.id)}
+                            >
+                                -
+                            </a>
+                            &nbsp;
+                            <Link
+                                to={`/search?query=${tag.name}`}
+                            >
+                                {tag.name}
+                            </Link>
+                        </li>
+                    ))
+                }
+                <li className="tag-container__tag-entry">
+                    <a
+                        href="#"
+                        onClick={addTags}
+                    >
+                        + add tags
+                    </a>
+                </li>
+            </ul>
+        </main>
     );
 }
 
