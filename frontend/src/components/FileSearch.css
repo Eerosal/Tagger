@@ -17,3 +17,10 @@
     float: left;
 }
 
+.file-search-thumbnail__filename {
+    font-size: 0.8em;
+}
+
+.file-search-thumbnail__video-thumbnail {
+    text-align: center;
+}

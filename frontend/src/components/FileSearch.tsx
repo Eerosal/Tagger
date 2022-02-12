@@ -37,32 +37,29 @@ function FileSearchThumbnail(props: FileSearchThumbnailProps) {
             break;
         }
         case "mp4":
-            child = <>
-                <div>
-                    <img
-                        src={VideoThumbnail}
-                        alt={
-                            file.name
-                        }
-                    />
-                </div>
-                <div className="videoFilename">
-                    <p>{file.name}</p>
-                </div>
-            </>;
+            child = <div
+                className="file-search-thumbnail__video-thumbnail"
+            >
+                <img
+                    src={VideoThumbnail}
+                    alt={
+                        file.name
+                    }
+                />
+                <p className="file-search-thumbnail__filename">
+                    {file.name}
+                </p>
+            </div>;
             break;
     }
 
-    if (child != null) {
-        return <Link to={`/files/${file.id}`}>
-            <div className="file-search__result">
-                {child}
-            </div>
-        </Link>;
-
+    if (child === null) {
+        return null;
     }
 
-    return null;
+    return <Link to={`/files/${file.id}`}>
+        {child}
+    </Link>;
 }
 
 interface FileSearchProps {
@@ -107,10 +104,14 @@ function FileSearch(props: FileSearchProps) {
             <div className="file-search__results-container">
                 {
                     response.results.map((result) => (
-                        <FileSearchThumbnail
+                        <div
                             key={result.id}
-                            file={result}
-                        />
+                            className="file-search__result"
+                        >
+                            <FileSearchThumbnail
+                                file={result}
+                            />
+                        </div>
                     ))
                 }
             </div>
