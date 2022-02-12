@@ -1,16 +1,18 @@
-.uploadForm {
+.upload__upload-box {
     background-color: #e3e3e3;
     padding: 10px;
 }
 
-.uploadFormTextInput {
-    height: 18px;
-    font-size: 16px;
-}
-
-.uploadForm > * {
+.upload__upload-box > * {
     margin-top: 5px;
 
     width: 100%;
     max-width: 200px;
 }
+
+.upload__upload-name-input {
+    height: 18px;
+    font-size: 16px;
+}
+
+

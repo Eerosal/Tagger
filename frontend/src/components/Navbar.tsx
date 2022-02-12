@@ -1,3 +1,4 @@
+import "./Navbar.css";
 import { Link } from "react-router-dom";
 
 interface NavbarEntry {
@@ -22,11 +23,11 @@ const navbarEntries: NavbarEntry[] = [
 
 export default function Navbar() {
     return (
-        <div className="navBar">
+        <div className="navbar">
             {
                 navbarEntries.map((navEntry) => (
                     <Link
-                        className="navBarEntry"
+                        className="navbar__entry"
                         to={navEntry.path}
                         key={navEntry.name}
                     >

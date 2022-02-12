@@ -56,13 +56,12 @@ export default function Upload() {
         <main>
             <h2>Upload</h2>
             <form onSubmit={onUploadFormSubmit}>
-                <div className="uploadForm">
+                <div className="upload__upload-box">
                     <label>
                         Filename<br />
                         <input
                             type="text"
-                            id="inputFilename"
-                            className="uploadFormTextInput"
+                            className="upload__upload-name-input"
                             value={filename}
                             onChange={
                                 (event: ChangeEvent<HTMLInputElement>) => {

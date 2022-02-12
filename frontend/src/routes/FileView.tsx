@@ -47,11 +47,11 @@ function TagContainer(props: TagContainerProps) {
     };
 
     return (
-        <ul className="tagContainer">
+        <ul className="tag-container">
             {
                 response.tags.map((tag) => (
                     <li key={tag.id}
-                        className="tagContainerEntry">
+                        className="tag-container__tag-entry">
                         <a
                             href="#"
                             onClick={() => removeTag(tag.id)}
@@ -67,7 +67,7 @@ function TagContainer(props: TagContainerProps) {
                     </li>
                 ))
             }
-            <li className="tagContainerEntry">
+            <li className="tag-container__tag-entry">
                 <a
                     href="#"
                     onClick={addTags}
