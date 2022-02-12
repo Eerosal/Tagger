@@ -2,10 +2,14 @@
     list-style-type: none;
 }
 
-.fileContainer > *{
-    max-width: 93%
+.file-view__file-name, .file-view__size-button {
+    display: inline-block;
 }
 
-.fileContainerExpanded {
+.file-view__size-button {
+    margin-left: 10px;
+}
 
+.file-view__file--minimized > * {
+    max-width: 93%;
 }

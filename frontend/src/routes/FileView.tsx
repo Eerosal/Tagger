@@ -82,7 +82,7 @@ function TagContainer(props: TagContainerProps) {
 export default function FileView() {
     const navigate = useNavigate();
     const { fileId: fileIdParam } = useParams();
-    const [expanded, setExpanded] = useState<boolean>(false);
+    const [maximized, setMaximized] = useState<boolean>(false);
     const [response, setResponse] =
         useState<TaggerFileResponse>(null);
     const { state } = useLocation();
@@ -128,26 +128,32 @@ export default function FileView() {
             {
                 response &&
                 <>
-                    <h3>
+                    <h3 className="file-view__file-name">
                         {response.file.id} {response.file.name}
                     </h3>
-                    <a
-                        href="#"
-                        onClick={() => {
-                            setExpanded(!expanded);
-                        }}
+                    <button
+                        type="button"
+                        onClick={
+                            () => setMaximized(value => !value)
+                        }
+                        className="file-view__size-button"
                     >
-                        <div
-                            className={
-                                expanded ?
-                                    "fileContainerExpanded" : "fileContainer"
-                            }
-                        >
-                            <FileContainer
-                                file={response.file}
-                            />
-                        </div>
-                    </a>
+                        {
+                            maximized ? "minimize" : "maximize"
+                        }
+                    </button>
+                    <br /><br />
+                    <div
+                        className={
+                            `file-view__file ${
+                                maximized ? "file-view__file--maximized"
+                                    : "file-view__file--minimized"}`
+                        }
+                    >
+                        <FileContainer
+                            file={response.file}
+                        />
+                    </div>
                     <TagContainer
                         response={response}
                         setResponse={setResponse}

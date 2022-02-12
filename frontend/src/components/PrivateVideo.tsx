@@ -14,7 +14,12 @@ function PrivateVideo(props: PrivateVideoProps) {
     }
 
     return (
-        <video className={className} controls>
+        <video
+            className={`${className} private-video`}
+            controls
+            draggable="false"
+            loop
+        >
             <source src={dataUrlSrc} type="video/mp4" />
             <track kind="captions" />
         </video>
