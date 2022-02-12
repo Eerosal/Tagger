@@ -7,7 +7,7 @@ import {
 } from "../common/types";
 import tagsService from "../services/tagsService";
 import FileContainer from "../components/FileContainer";
-import { JwtTokenContext } from "../components/AuthenticationProvider";
+import { AuthenticationContext } from "../components/AuthenticationProvider";
 
 interface TagContainerProps {
     response: TaggerFileResponse,
@@ -16,7 +16,7 @@ interface TagContainerProps {
 
 function TagContainer(props: TagContainerProps) {
     const { response, setResponse } = props;
-    const { jwtToken } = useContext(JwtTokenContext);
+    const { jwtToken } = useContext(AuthenticationContext);
 
     const removeTag = async (tagId: number) => {
         const newResponse =
@@ -87,7 +87,7 @@ export default function FileView() {
         useState<TaggerFileResponse>(null);
     const { state } = useLocation();
     const { uploadedFileResponse } = (state || {}) as FileViewState;
-    const { jwtToken } = useContext(JwtTokenContext);
+    const { jwtToken } = useContext(AuthenticationContext);
 
     useEffect(() => {
         const fileId = parseInt(fileIdParam, 10);

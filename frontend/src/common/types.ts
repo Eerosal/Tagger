@@ -27,3 +27,8 @@ export interface Session {
     token: string,
     updatedAt: number
 }
+
+export interface TaggerAuthorizationResponse {
+    token: string,
+    lifetimeSeconds: number
+}

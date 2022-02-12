@@ -1,21 +1,17 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Spinner from "./Spinner";
-import { Session } from "../common/types";
+import { Session, TaggerAuthorizationResponse } from "../common/types";
 import authService from "../services/authService";
 
-const JWT_TOKEN_TTL = 60 * 2;
+let JWT_TOKEN_TTL: number = null;
 
-interface JwtTokenContextState {
+interface AuthenticationContextState {
     jwtToken: string,
-    setJwtToken: (jwtToken: string) => void
+    setAuthResponse: (auth: TaggerAuthorizationResponse) => void
 }
 
-export const JwtTokenContext =
-    React.createContext<JwtTokenContextState>({
-        jwtToken: "",
-        setJwtToken: (jwtToken: string) => {
-        }
-    });
+export const AuthenticationContext =
+    React.createContext<AuthenticationContextState>(null);
 
 interface AuthenticationProps {
     children: JSX.Element | JSX.Element[];
@@ -28,8 +24,25 @@ export function AuthenticationProvider(props: AuthenticationProps) {
     const [authenticated, setAuthenticated] = useState<boolean>(false);
 
     const [jwtToken, setJwtToken] = useState<string>("");
+
+    const setAuthResponse = (authResponse: TaggerAuthorizationResponse) => {
+        if(authResponse == null){
+            setJwtToken("");
+
+            return;
+        }
+
+        setJwtToken(authResponse.token);
+
+        JWT_TOKEN_TTL = authResponse.lifetimeSeconds;
+    };
+
     const value = useMemo(() => (
-        { jwtToken, setJwtToken }), [jwtToken]);
+        {
+            jwtToken,
+            setAuthResponse
+        }
+    ), [jwtToken]);
 
     const getSession = () => JSON.parse(
         localStorage.taggerSession || "{}"
@@ -43,10 +56,11 @@ export function AuthenticationProvider(props: AuthenticationProps) {
         }
 
         try {
-            const token = await authService.renewToken(session.token);
+            const authResponse =
+                await authService.renewToken(session.token);
 
-            if (token) {
-                setJwtToken(token);
+            if (authResponse) {
+                setAuthResponse(authResponse);
                 return;
             }
         } catch (e) {
@@ -89,12 +103,14 @@ export function AuthenticationProvider(props: AuthenticationProps) {
                 return;
             }
 
-            const now = new Date().getTime() / 1000;
-            const lastUpdate = session.updatedAt;
+            if(JWT_TOKEN_TTL) {
+                const now = new Date().getTime() / 1000;
+                const lastUpdate = session.updatedAt;
 
-            const diff = (now - lastUpdate);
-            if (diff < JWT_TOKEN_TTL / 3) {
-                return;
+                const diff = (now - lastUpdate);
+                if (diff < JWT_TOKEN_TTL / 3) {
+                    return;
+                }
             }
 
             await renewToken(session);
@@ -115,9 +131,9 @@ export function AuthenticationProvider(props: AuthenticationProps) {
 
     if (ready) {
         return (
-            <JwtTokenContext.Provider value={value}>
+            <AuthenticationContext.Provider value={value}>
                 {children}
-            </JwtTokenContext.Provider>
+            </AuthenticationContext.Provider>
         );
     }
 

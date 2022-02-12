@@ -6,7 +6,7 @@ import filesService from "../services/filesService";
 import Paginator from "./Paginator";
 import VideoThumbnail from "../assets/img/video_thumbnail.svg";
 import Spinner from "./Spinner";
-import { JwtTokenContext } from "./AuthenticationProvider";
+import { AuthenticationContext } from "./AuthenticationProvider";
 import PrivateImage from "./PrivateImage";
 import { PrivateSourceProvider } from "./PrivateSourceProvider";
 
@@ -71,7 +71,7 @@ interface FileSearchProps {
 
 function FileSearch(props: FileSearchProps) {
     const { query, page, pageSize, paginator } = props;
-    const { jwtToken } = useContext(JwtTokenContext);
+    const { jwtToken } = useContext(AuthenticationContext);
 
 
     const [response, setResponse] =

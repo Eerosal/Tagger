@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import authService from "../services/authService";
-import { JwtTokenContext }
+import { AuthenticationContext }
     from "../components/AuthenticationProvider";
 
 export default function Login() {
-    const { setJwtToken } = useContext(JwtTokenContext);
+    const { setAuthResponse } = useContext(AuthenticationContext);
 
     const navigate = useNavigate();
 
@@ -14,13 +14,13 @@ export default function Login() {
 
     const attemptLogin = async () => {
         try {
-            const token = await authService.login({
+            const authResponse = await authService.login({
                 username,
                 password
             });
 
-            if (token) {
-                setJwtToken(token);
+            if (authResponse) {
+                setAuthResponse(authResponse);
 
                 navigate("/");
             }
@@ -32,7 +32,7 @@ export default function Login() {
                 alert(e);
             }
 
-            setJwtToken("");
+            setAuthResponse(null);
         }
 
     };

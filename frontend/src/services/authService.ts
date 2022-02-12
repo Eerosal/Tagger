@@ -1,35 +1,29 @@
 import axios from "axios";
-import jwtDecode, { JwtPayload } from "jwt-decode";
+import { TaggerAuthorizationResponse } from "../common/types";
 
 interface LoginForm {
     username: string,
     password: string
 }
 
-interface TaggerAuthorizationResponse {
-    token: string
-}
-
-const login = async (loginForm: LoginForm): Promise<string> => {
+const login = async (loginForm: LoginForm):
+    Promise<TaggerAuthorizationResponse> => {
     const response = await axios.post("/authorize", loginForm);
 
     const data = await response.data;
 
-    const { token } = data as TaggerAuthorizationResponse;
-
-    return token;
+    return data as TaggerAuthorizationResponse;
 }
 
-const renewToken = async (token: string): Promise<string> => {
+const renewToken = async (token: string):
+    Promise<TaggerAuthorizationResponse> => {
     const response = await axios.post("/renew-token", {}, {
         headers: { Authorization: `Bearer ${token}`}
     });
 
     const data = await response.data;
 
-    const { token: newToken } = data as TaggerAuthorizationResponse;
-
-    return newToken;
+    return data as TaggerAuthorizationResponse;
 }
 
 const actions = {

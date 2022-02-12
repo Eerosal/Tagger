@@ -1,10 +1,10 @@
 import { Navigate , Outlet } from "react-router-dom";
 import { useContext, useEffect } from "react";
-import { JwtTokenContext } from "./AuthenticationProvider";
+import { AuthenticationContext } from "./AuthenticationProvider";
 
 
 export default function PrivateOutlet() {
-    const { jwtToken } = useContext<any>(JwtTokenContext);
+    const { jwtToken } = useContext<any>(AuthenticationContext);
 
 
     return jwtToken && jwtToken.length > 0
