@@ -38,11 +38,11 @@ public class FileUtil {
     public static void uploadThumbnail(final MinioClient minioClient,
                                        final String bucket,
                                        final File originalFile,
-                                       final int fileId) throws Exception {
+                                       final String thumbnailFilename)
+        throws Exception {
         File tempFile = getTempFile();
         createThumbnail(originalFile, tempFile, 150, 150);
 
-        String thumbnailFilename = fileId + "_thumbnail.jpg";
         try {
             upload(
                 minioClient,

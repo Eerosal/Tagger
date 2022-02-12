@@ -19,14 +19,14 @@ public abstract class CrudRepository<T, ID> {
     public CrudRepository(final ConnectionSource connectionSource,
                           final Class<T> clazz) {
         this.handle = DaoManager.createDao(
-                connectionSource,
-                clazz
+            connectionSource,
+            clazz
         );
 
         try {
             TableUtils.createTableIfNotExists(
-                    connectionSource,
-                    clazz
+                connectionSource,
+                clazz
             );
         } catch (Exception ignored) {
         }
@@ -40,6 +40,11 @@ public abstract class CrudRepository<T, ID> {
     @SneakyThrows
     public T create(final T value) {
         handle.create(value);
+
+        // TODO: Create a new row in the database from an object.
+        //  If the object being created uses DatabaseField.generatedId()
+        //  then the data parameter will be modified and set with the
+        //  corresponding id from the database
 
         return value;
     }

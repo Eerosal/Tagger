@@ -1,5 +1,6 @@
 package fi.eerosalla.web.tagger.repository.file;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,5 +30,13 @@ public class FileEntry {
     @Column
     private String extension;
 
-    // TODO: add utils for filenames
+    @JsonIgnore
+    public String getInternalFilename() {
+        return name + "." + extension;
+    }
+
+    @JsonIgnore
+    public String getThumbnailFilename() {
+        return name + "_thumbnail.jpg";
+    }
 }

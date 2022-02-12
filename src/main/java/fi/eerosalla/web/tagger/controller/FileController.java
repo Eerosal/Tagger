@@ -147,8 +147,6 @@ public class FileController {
 
         FileEntry fileWithId = fileRepository.create(file);
 
-        String internalFilename = fileWithId.getId() + "." + extension;
-
         File tempFile = FileUtil.getTempFile();
         try {
             multipartFile.transferTo(tempFile);
@@ -157,7 +155,7 @@ public class FileController {
                 minioClient,
                 minioConfig.getBucket(),
                 tempFile,
-                internalFilename,
+                fileWithId.getInternalFilename(),
                 mimetype
             );
 
@@ -167,7 +165,7 @@ public class FileController {
                     minioClient,
                     minioConfig.getBucket(),
                     tempFile,
-                    fileWithId.getId()
+                    fileWithId.getThumbnailFilename()
                 );
             }
         } finally {
