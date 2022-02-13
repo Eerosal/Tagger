@@ -1,5 +1,6 @@
 .tag-container__tag-entry {
     list-style-type: none;
+    cursor: pointer;
 }
 
 .file-view__file-name, .file-view__size-button {

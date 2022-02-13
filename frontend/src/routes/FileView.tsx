@@ -22,7 +22,7 @@ function TagContainer(props: TagContainerProps) {
     const jwtToken = useJwtToken();
     const setError = useSetError();
 
-    const removeTag = async (tagId: number) => {
+    const removeTag = async (tagId: number): Promise<void> => {
         try {
             const newResponse =
                 await filesService.removeTags(
@@ -78,16 +78,26 @@ function TagContainer(props: TagContainerProps) {
         }
     };
 
-    // TODO: fix link jump
     return (
         <main>
             <ul className="tag-container">
                 {
-                    response.tags.map((tag) => (
+                    response.tags.map((tag, i) => (
                         <li key={tag.id}
                             className="tag-container__tag-entry">
                             <a
-                                href="#"
+                                role="button"
+                                tabIndex={i * 2}
+                                title={`Remove tag ${tag.name}`}
+                                onKeyPress={
+                                    (event) => {
+                                        if (event.key === "Enter") {
+                                            event.preventDefault();
+
+                                            removeTag(tag.id).then();
+                                        }
+                                    }
+                                }
                                 onClick={() => removeTag(tag.id)}
                             >
                                 -
@@ -95,6 +105,8 @@ function TagContainer(props: TagContainerProps) {
                             &nbsp;
                             <Link
                                 to={`/search?query=${tag.name}`}
+                                tabIndex={i * 2 + 1}
+                                title={`Search for ${tag.name}`}
                             >
                                 {tag.name}
                             </Link>
@@ -103,7 +115,17 @@ function TagContainer(props: TagContainerProps) {
                 }
                 <li className="tag-container__tag-entry">
                     <a
-                        href="#"
+                        role="button"
+                        tabIndex={response.tags.length * 2}
+                        onKeyPress={
+                            (event) => {
+                                if (event.key === "Enter") {
+                                    event.preventDefault();
+
+                                    addTags().then();
+                                }
+                            }
+                        }
                         onClick={addTags}
                     >
                         + add tags
