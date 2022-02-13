@@ -3,7 +3,6 @@ package fi.eerosalla.web.tagger.controller.file;
 import fi.eerosalla.web.tagger.model.response.ErrorResponse;
 import fi.eerosalla.web.tagger.repository.file.FileEntry;
 import fi.eerosalla.web.tagger.repository.file.FileRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -18,11 +17,14 @@ import java.util.Map;
 @ControllerAdvice(assignableTypes = {FileController.class})
 public class FileControllerAdvice {
 
+    public FileControllerAdvice(final FileRepository fileRepository) {
+        this.fileRepository = fileRepository;
+    }
+
     private static class FileEntryNotFoundException extends Exception {
     }
 
-    @Autowired
-    private FileRepository fileRepository;
+    private final FileRepository fileRepository;
 
     @ModelAttribute
     public void injectFile(

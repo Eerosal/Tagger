@@ -6,7 +6,6 @@ import fi.eerosalla.web.tagger.repository.CrudRepository;
 import fi.eerosalla.web.tagger.repository.file.FileEntry;
 import fi.eerosalla.web.tagger.repository.tag.TagRepository;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -18,11 +17,13 @@ import java.util.stream.Collectors;
 public class ConnectionRepository extends
     CrudRepository<ConnectionEntry, Integer> {
 
-    @Autowired
-    private TagRepository tagRepository;
+    private final TagRepository tagRepository;
 
-    public ConnectionRepository(final ConnectionSource connectionSource) {
+    // TODO: move the logic to separate class?
+    public ConnectionRepository(final ConnectionSource connectionSource,
+                                final TagRepository tagRepository) {
         super(connectionSource, ConnectionEntry.class);
+        this.tagRepository = tagRepository;
     }
 
     @SneakyThrows
