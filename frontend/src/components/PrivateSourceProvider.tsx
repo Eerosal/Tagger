@@ -22,6 +22,10 @@ export function PrivateSourceProvider(
             return;
         }
 
+        if(dataUrlSrc && dataUrlSrc.length > 0){
+            return;
+        }
+
         (async () => {
             try {
                 const response = await axios.get(src, {
