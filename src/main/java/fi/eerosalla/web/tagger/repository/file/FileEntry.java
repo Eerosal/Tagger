@@ -1,11 +1,11 @@
 package fi.eerosalla.web.tagger.repository.file;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.j256.ormlite.field.DatabaseField;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,7 +15,11 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Getter
 @Setter
-@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "fileseq")
+@SequenceGenerator(
+    initialValue = 1,
+    name = "idgen",
+    sequenceName = "fileseq"
+)
 @Table(name = "tg_files")
 public class FileEntry {
 
@@ -23,11 +27,11 @@ public class FileEntry {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idgen")
     private Integer id;
 
-    @Column
+    @DatabaseField
     private String name;
 
     // jpg/png/gif etc.
-    @Column
+    @DatabaseField
     private String extension;
 
     @JsonIgnore

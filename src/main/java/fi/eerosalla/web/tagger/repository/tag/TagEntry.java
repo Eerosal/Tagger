@@ -14,7 +14,11 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Getter
 @Setter
-@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "tagseq")
+@SequenceGenerator(
+    initialValue = 1,
+    name = "idgen",
+    sequenceName = "tagseq"
+)
 @Table(name = "tg_tags")
 public class TagEntry {
 

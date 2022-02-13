@@ -4,11 +4,9 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import fi.eerosalla.web.tagger.repository.CrudRepository;
 import fi.eerosalla.web.tagger.repository.file.FileEntry;
-import fi.eerosalla.web.tagger.repository.tag.TagRepository;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,13 +15,9 @@ import java.util.stream.Collectors;
 public class ConnectionRepository extends
     CrudRepository<ConnectionEntry, Integer> {
 
-    private final TagRepository tagRepository;
 
-    // TODO: move the logic to separate class?
-    public ConnectionRepository(final ConnectionSource connectionSource,
-                                final TagRepository tagRepository) {
+    public ConnectionRepository(final ConnectionSource connectionSource) {
         super(connectionSource, ConnectionEntry.class);
-        this.tagRepository = tagRepository;
     }
 
     @SneakyThrows
@@ -53,20 +47,6 @@ public class ConnectionRepository extends
             }).collect(Collectors.toList());
 
         getHandle().create(newConnections);
-    }
-
-    @SneakyThrows
-    public QueryBuilder<ConnectionEntry, Integer> getTagMatchQuery(
-        final Collection<String> tagNames) {
-
-        return getHandle().queryBuilder()
-            .selectColumns("fileId")
-            .join(
-                "tagId",
-                "id",
-                tagRepository.getNameQuery(tagNames)
-            ).groupBy("fileId")
-            .having("COUNT(1) = " + tagNames.size());
     }
 
     @SneakyThrows

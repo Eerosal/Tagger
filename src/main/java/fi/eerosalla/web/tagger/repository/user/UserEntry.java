@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,7 +16,11 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Getter
 @Setter
-@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "userseq")
+@SequenceGenerator(
+    initialValue = 1,
+    name = "idgen",
+    sequenceName = "userseq"
+)
 @Table(name = "tg_users")
 public class UserEntry {
 
@@ -28,7 +31,7 @@ public class UserEntry {
     @DatabaseField(uniqueIndexName = "idx_user_username")
     private String username;
 
-    @Column
+    @DatabaseField
     private String passwordHash;
 
     @DatabaseField(indexName = "idx_user_role")

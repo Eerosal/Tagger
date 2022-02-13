@@ -6,6 +6,7 @@ import fi.eerosalla.web.tagger.model.form.TagIdsForm;
 import fi.eerosalla.web.tagger.model.response.ErrorResponse;
 import fi.eerosalla.web.tagger.model.response.FileQueryResponse;
 import fi.eerosalla.web.tagger.model.response.FileResponse;
+import fi.eerosalla.web.tagger.repository.CombinedQueries;
 import fi.eerosalla.web.tagger.repository.connection.ConnectionRepository;
 import fi.eerosalla.web.tagger.repository.file.FileEntry;
 import fi.eerosalla.web.tagger.repository.file.FileRepository;
@@ -39,27 +40,27 @@ import java.util.Map;
 public class FileController {
 
     private final FileRepository fileRepository;
-
     private final ConnectionRepository connectionRepository;
-
     private final TagRepository tagRepository;
-
     private final MinioClient minioClient;
     private final MinioConfig minioConfig;
     private final FileConfig fileConfig;
+    private final CombinedQueries combinedQueries;
 
     public FileController(final FileRepository fileRepository,
                           final ConnectionRepository connectionRepository,
                           final TagRepository tagRepository,
                           final MinioClient minioClient,
                           final MinioConfig minioConfig,
-                          final FileConfig fileConfig) {
+                          final FileConfig fileConfig,
+                          final CombinedQueries combinedQueries) {
         this.fileRepository = fileRepository;
         this.connectionRepository = connectionRepository;
         this.tagRepository = tagRepository;
         this.minioClient = minioClient;
         this.minioConfig = minioConfig;
         this.fileConfig = fileConfig;
+        this.combinedQueries = combinedQueries;
     }
 
     @SneakyThrows
@@ -130,7 +131,7 @@ public class FileController {
         file.setName(filename);
         file.setExtension(fileType.getCanonicalExtension());
 
-        FileEntry fileWithId = fileRepository.create(file);
+        fileRepository.create(file);
 
         File tempFile = FileUtil.getTempFile();
         try {
@@ -140,7 +141,7 @@ public class FileController {
                 minioClient,
                 minioConfig.getBucket(),
                 tempFile,
-                fileWithId.getInternalFilename(),
+                file.getInternalFilename(),
                 fileType.getMimetype()
             );
 
@@ -149,14 +150,14 @@ public class FileController {
                     minioClient,
                     minioConfig.getBucket(),
                     tempFile,
-                    fileWithId.getThumbnailFilename()
+                    file.getThumbnailFilename()
                 );
             }
         } finally {
             tempFile.delete();
         }
 
-        return getFileResponseWithTags(fileWithId);
+        return getFileResponseWithTags(file);
     }
 
     @GetMapping("/api/files")
@@ -164,7 +165,7 @@ public class FileController {
         final @RequestParam @NotNull String query) {
 
         Map.Entry<Integer, List<FileEntry>> resultsEntry =
-            fileRepository.query(query);
+            combinedQueries.queryFiles(query);
 
         return new FileQueryResponse(
             resultsEntry.getKey(),

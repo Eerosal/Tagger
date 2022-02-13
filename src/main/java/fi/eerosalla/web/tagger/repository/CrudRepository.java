@@ -38,15 +38,8 @@ public abstract class CrudRepository<T, ID> {
     }
 
     @SneakyThrows
-    public T create(final T value) {
+    public void create(final T value) {
         handle.create(value);
-
-        // TODO: Create a new row in the database from an object.
-        //  If the object being created uses DatabaseField.generatedId()
-        //  then the data parameter will be modified and set with the
-        //  corresponding id from the database
-
-        return value;
     }
 
     @SneakyThrows
