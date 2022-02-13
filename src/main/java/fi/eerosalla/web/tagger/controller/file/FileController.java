@@ -146,11 +146,12 @@ public class FileController {
             );
 
             if (!fileType.equals(FileType.MP4)) {
-                FileUtil.uploadThumbnail(
+                FileUtil.createAndUploadThumbnail(
                     minioClient,
                     minioConfig.getBucket(),
                     tempFile,
-                    file.getThumbnailFilename()
+                    file.getThumbnailFilename(),
+                    150, 150
                 );
             }
         } finally {

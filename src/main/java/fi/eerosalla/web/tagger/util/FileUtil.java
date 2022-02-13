@@ -11,7 +11,6 @@ import java.io.File;
 
 public class FileUtil {
 
-    // used to avoid file name conflicts
     private static int tempFileCounter = 1;
 
     @SneakyThrows
@@ -35,13 +34,15 @@ public class FileUtil {
         return tempFile;
     }
 
-    public static void uploadThumbnail(final MinioClient minioClient,
-                                       final String bucket,
-                                       final File originalFile,
-                                       final String thumbnailFilename)
+    public static void createAndUploadThumbnail(final MinioClient minioClient,
+                                                final String bucket,
+                                                final File originalFile,
+                                                final String thumbnailFilename,
+                                                final int maxWidth,
+                                                final int maxHeight)
         throws Exception {
         File tempFile = getTempFile();
-        createThumbnail(originalFile, tempFile, 150, 150);
+        createThumbnail(originalFile, tempFile, maxWidth, maxHeight);
 
         try {
             upload(
