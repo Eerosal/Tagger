@@ -1,4 +1,4 @@
-package fi.eerosalla.web.tagger.controller;
+package fi.eerosalla.web.tagger.controller.file;
 
 import fi.eerosalla.web.tagger.config.FileConfig;
 import fi.eerosalla.web.tagger.config.MinioConfig;
@@ -31,26 +31,12 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RolesAllowed("ADMIN")
 @RestController
 public class FileController {
-
-
-    private static final Map<String, String> KNOWN_EXTENSIONS =
-        new HashMap<>();
-
-    // TODO: enum
-    static {
-        KNOWN_EXTENSIONS.put("png", "image/png");
-        KNOWN_EXTENSIONS.put("jpg", "image/jpeg");
-        KNOWN_EXTENSIONS.put("gif", "image/gif");
-        KNOWN_EXTENSIONS.put("mp4", "video/mp4");
-        // TODO: more formats
-    }
 
     private final FileRepository fileRepository;
 
@@ -100,7 +86,6 @@ public class FileController {
         return getFileResponseWithTags(file);
     }
 
-    // TODO: fetch => axios
     @SneakyThrows
     @RequestMapping(
         value = "/api/files",
@@ -133,8 +118,8 @@ public class FileController {
 
         String[] nameSplit = multipartFile.getOriginalFilename().split("\\.");
         String extension = nameSplit[nameSplit.length - 1].toLowerCase();
-        String mimetype = KNOWN_EXTENSIONS.get(extension);
-        if (mimetype == null) {
+        FileType fileType = FileType.getByExtension(extension);
+        if (fileType == null) {
             return new ResponseEntity<>(
                 new ErrorResponse("Unknown file extension"),
                 HttpStatus.BAD_REQUEST
@@ -143,7 +128,7 @@ public class FileController {
 
         FileEntry file = new FileEntry();
         file.setName(filename);
-        file.setExtension(extension);
+        file.setExtension(fileType.getCanonicalExtension());
 
         FileEntry fileWithId = fileRepository.create(file);
 
@@ -156,11 +141,10 @@ public class FileController {
                 minioConfig.getBucket(),
                 tempFile,
                 fileWithId.getInternalFilename(),
-                mimetype
+                fileType.getMimetype()
             );
 
-            // TODO: more formats support, not future proof
-            if (!mimetype.equals("video/mp4")) {
+            if (!fileType.equals(FileType.MP4)) {
                 FileUtil.uploadThumbnail(
                     minioClient,
                     minioConfig.getBucket(),

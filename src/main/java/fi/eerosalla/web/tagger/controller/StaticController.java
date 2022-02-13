@@ -33,7 +33,7 @@ public class StaticController {
     }
 
     private static final Pattern FILENAME_PATTERN =
-        Pattern.compile("^[a-z0-9_]+\\.[a-z]{3}$", Pattern.CASE_INSENSITIVE);
+        Pattern.compile("^[a-z0-9_]+\\.[a-z0-9]{3}$", Pattern.CASE_INSENSITIVE);
 
     @GetMapping("/static/**")
     public ResponseEntity<?> minioMirror(final HttpServletRequest request)
@@ -54,6 +54,7 @@ public class StaticController {
         }
 
         // the url isn't visible to users so the lifetime doesn't really matter
+        // (unless something unexpected like an error occurs)
         GetPresignedObjectUrlArgs args =
             MinioUtil.createGetPresignedObjectUrlArgs(
                 minioConfig.getBucket(), objectName, 120
