@@ -32,11 +32,11 @@ public class FileEntry {
 
     @JsonIgnore
     public String getInternalFilename() {
-        return name + "." + extension;
+        return this.getId() + "." + this.getExtension();
     }
 
     @JsonIgnore
     public String getThumbnailFilename() {
-        return name + "_thumbnail.jpg";
+        return this.getId() + "_thumbnail.jpg";
     }
 }
