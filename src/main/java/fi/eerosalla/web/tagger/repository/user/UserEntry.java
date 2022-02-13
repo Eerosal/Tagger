@@ -1,5 +1,6 @@
 package fi.eerosalla.web.tagger.repository.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.j256.ormlite.field.DatabaseField;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,8 +30,9 @@ public class UserEntry {
     private Integer id;
 
     @DatabaseField(uniqueIndexName = "idx_user_username")
-    private String username;
+    private String name;
 
+    @JsonIgnore
     @DatabaseField
     private String passwordHash;
 

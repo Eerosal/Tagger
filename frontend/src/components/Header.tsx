@@ -20,6 +20,10 @@ const navbarEntries: NavbarEntry[] = [
     {
         name: "Upload",
         path: "/upload"
+    },
+    {
+        name: "Users",
+        path: "/users"
     }
 ];
 

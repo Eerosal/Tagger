@@ -9,6 +9,12 @@ export interface TaggerTag {
     name: string
 }
 
+export interface TaggerUser {
+    id: number,
+    name: string,
+    role: string
+}
+
 export interface TaggerFileQueryResponse {
     totalResultsCount: number,
     results: TaggerFile[]
@@ -31,9 +37,4 @@ export interface Session {
 export interface TaggerAuthorizationResponse {
     token: string,
     lifetimeSeconds: number
-}
-
-
-export interface TaggerErrorResponse {
-    error: string
 }

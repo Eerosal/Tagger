@@ -11,6 +11,7 @@ import Login from "./routes/Login";
 import { AuthenticationProvider } from "./components/AuthenticationProvider";
 import { ErrorHandlingProvider } from "./components/ErrorHandlingProvider";
 import Header from "./components/Header";
+import Users from "./routes/Users";
 
 function App() {
     return (
@@ -38,6 +39,7 @@ function App() {
                             <Route
                                 path="/files/:fileId" element={<FileView />}
                             />
+                            <Route path="/users" element={<Users />} />
                         </Route>
 
                         <Route

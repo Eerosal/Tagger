@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { AxiosError, AxiosResponse } from "axios";
 import { useLocation } from "react-router-dom";
-import { useSetAuthResponse } from "./AuthenticationProvider";
+import { useJwtToken, useSetAuthResponse } from "./AuthenticationProvider";
 
 type HandledError = AxiosError | Error;
 type ErrorConsumer = (error: HandledError | string) => void;
@@ -39,7 +39,10 @@ export function ErrorHandlingProvider(
     const { children } = props;
     const [clientError, setClientError] = useState<ClientError>(null);
     const setAuthResponse = useSetAuthResponse();
+    const jwtToken = useJwtToken();
     const location = useLocation();
+
+    const isAuthenticated = () => jwtToken != null && jwtToken.length > 0;
 
     useEffect(() => {
         setClientError(null);
@@ -67,7 +70,8 @@ export function ErrorHandlingProvider(
                 const responseCode = response.status;
 
                 // Unauthorized => reset login
-                if(responseCode === 401){
+                if(isAuthenticated() &&
+                    responseCode === 401){
                     setAuthResponse(null);
 
                     return;

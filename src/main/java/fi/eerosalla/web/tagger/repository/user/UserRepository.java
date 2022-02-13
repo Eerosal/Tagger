@@ -18,23 +18,23 @@ public class UserRepository extends CrudRepository<UserEntry, Integer> {
 
         getHandle().setObjectCache(new LruObjectCache(128));
 
-        UserEntry rootUser = queryForId(1);
-        if (rootUser != null) {
+        UserEntry anyUser = getHandle().queryForFirst();
+        if (anyUser != null) {
             return;
         }
 
-        UserEntry newRootUser = new UserEntry(
+        UserEntry rootUser = new UserEntry(
             1, "root", passwordEncoder.encode("1234root"), "ADMIN"
         );
 
-        create(newRootUser);
+        create(rootUser);
     }
 
     @SneakyThrows
     public UserEntry queryForUsername(final String username) {
         return super.getHandle().queryBuilder()
             .where()
-            .eq("username", username)
+            .eq("name", username)
             .queryForFirst();
     }
 

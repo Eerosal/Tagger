@@ -55,7 +55,7 @@ public class AuthorizeController {
         final @RequestBody @Validated AuthorizeForm authorizeForm) {
 
         UserEntry user = userRepository.queryForUsername(
-            authorizeForm.getUsername()
+            authorizeForm.getUsername().toLowerCase()
         );
 
         if (user == null) {
@@ -70,7 +70,6 @@ public class AuthorizeController {
             authorizeForm.getPassword(),
             user.getPasswordHash()
         )) {
-
             System.out.println("invalid hash " + user.getPasswordHash());
             return new ResponseEntity<>(
                 new ErrorResponse("Invalid credentials"),
