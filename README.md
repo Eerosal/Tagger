@@ -1,10 +1,36 @@
-# Tagger
-WIP file tagging web application.
 
-This is my first React and Spring Boot project, so the code quality might not be the best.
+
+https://user-images.githubusercontent.com/28145295/157330753-75e67552-bb2f-484b-83ad-e4eeea0107bd.mp4
+
+
+# Tagger
+Work in progress web application for managing a collection of files. 
+
+Core functionality includes
+* File upload
+* File tagging
+* Searching files that contain given tags
+
+## Technical details
+
+Files and thumbnails are stored in Minio (self-hostable S3 compatible object storage). File metadata, tags and users are stored in SQL database.
+
+Some of the libraries/tools used in frontend (TypeScript)
+* React
+* Axios
+* ESLint
+
+Backend (Java)
+* Spring Boot
+* OrmLite
+* Lombok
+* Minio client
+* Gradle
+* CheckStyle
 
 ## How to run
 Please don't do it. I have plans to dockerize everything later when everything's ready enough, maybe then? 
+
 
 ## Disclaimer
 The application (Tagger) is provided AS IS without any kind of warranty.
