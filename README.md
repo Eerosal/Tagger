@@ -29,8 +29,7 @@ Backend (Java)
 * CheckStyle
 
 ## How to run
-Please don't do it. I have plans to dockerize everything later when everything's ready enough, maybe then? 
-
+Please don't do it. I'll commit the existing Docker files when everything's ready enough, maybe then?
 
 ## Disclaimer
 The application (Tagger) is provided AS IS without any kind of warranty.
