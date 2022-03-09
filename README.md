@@ -4,7 +4,7 @@ https://user-images.githubusercontent.com/28145295/157330753-75e67552-bb2f-484b-
 
 
 # Tagger
-Work in progress web application for managing a collection of files. 
+Simple web application for managing a collection of files. Work in progress.
 
 Core functionality includes
 * File upload
